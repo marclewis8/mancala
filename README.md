@@ -1,0 +1,2 @@
+# mancala
+Mancala problem set
