@@ -1,3 +1,3 @@
-import { drawBoard } from "./board-app";
+import { drawBoard } from "./board-script";
 
 drawBoard();
