@@ -21,7 +21,7 @@ export let drawBoard = (): void => {
     app.stage.addChild(board);
     
     for (let row = 0; row < 2; row++) {
-        for (let col = 0; col < 6; col++) {
+        for (let col = 1; col < 7; col++) {
 
             let bucket = new PIXI.Graphics();
             bucket.beginFill(0xff0000);
@@ -33,10 +33,19 @@ export let drawBoard = (): void => {
             app.stage.addChild(bucket);
 
         }
-
-
     }
 
+    let p1store = new PIXI.Graphics();
+    p1store.beginFill(0x00ff00);
+    p1store.drawRoundedRect(window.innerWidth / 2 + 100, OFFSET - CIRCLE_RADIUS, CIRCLE_RADIUS * 2, CIRCLE_RADIUS * 3 + OFFSET, 30);
+    p1store.endFill();
+    app.stage.addChild(p1store);
+
+    let p2store = new PIXI.Graphics();
+    p2store.beginFill(0xffff00);
+    p2store.drawRoundedRect(OFFSET, OFFSET - CIRCLE_RADIUS, CIRCLE_RADIUS * 2, CIRCLE_RADIUS * 3 + OFFSET, 30);
+    p2store.endFill();
+    app.stage.addChild(p2store);
 
 
 };
