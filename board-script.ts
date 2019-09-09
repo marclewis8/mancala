@@ -1,4 +1,4 @@
-import { Application } from "pixi.js";
+import { Application, interaction } from "pixi.js";
 
 export let drawBoard = (): void => {
 
@@ -9,7 +9,10 @@ export let drawBoard = (): void => {
     let graphics = new PIXI.Graphics();
     graphics.beginFill(0x0000ff);
     graphics.drawRoundedRect(0, 0, app.view.width, app.view.height, 30);
-    graphics.endFill();
+    let board = graphics.endFill();
+    board.interactive = true;
+    board.on("mousedown", (event: interaction.InteractionEvent) => {console.log("we clicked"); });
+
 
     app.stage.addChild(graphics);
 };
