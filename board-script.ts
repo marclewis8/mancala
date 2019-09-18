@@ -62,7 +62,7 @@ let drawStores = (app: Application) => {
 
 let drawStones = (app: Application) => {
     for (let i = 0; i < numStones; i++) {
-        let stone = PIXI.Sprite.from("ramses.png");
+        let stone = PIXI.Sprite.from("rameses.png");
         stone.scale = new PIXI.Point(.05, .05);
         stone.anchor.set(.5);
         let bucket = app.stage.getChildAt((i % numBuckets) + 1);
