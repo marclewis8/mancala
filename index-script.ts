@@ -21,11 +21,10 @@ export let initModel = () => {
 };
 
 export let onClick = (event: interaction.InteractionEvent): void => {
-    
-    console.log(getIndexFromClick(event));
-
-    let i = 0;
-
+    let stringCoords = getIndexFromClick(event);
+    let coords = stringCoords.split(",");
+    let [x, y] = coords.map(x => parseInt(x, 10));
+    console.log(`x: ${x}, y: ${y}`);
 };
 
 main();
