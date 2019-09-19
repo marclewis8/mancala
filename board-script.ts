@@ -95,9 +95,6 @@ export let getIndexFromClick = (event: interaction.InteractionEvent): string => 
 
     let x = event.data.global.x;
     let y = event.data.global.y;
-    console.log(event.data.global.x);
-    console.log(buckets[0][0].getBounds());
-
     for (let row = 0; row < buckets.length; row++) {
         for (let col = 0; col < buckets[row].length; col++) {
             let bounds = buckets[row][col].getBounds();
