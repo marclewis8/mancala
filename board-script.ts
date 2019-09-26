@@ -142,8 +142,11 @@ let ourOnClick = (event: interaction.InteractionEvent) => {
     let stringCoords = getIndexFromClick(event);
     let coords = stringCoords.split(",");
     let [row, col] = coords.map(x => parseInt(x, 10));
-    onClick(row, col);
-    drawStones();
-    drawStores();
+    if (onClick(row, col)) {
+        drawStones();
+        drawStores();
+    } else {
+        alert("Not your turn or your bucket is empty");
+    }
 };
 

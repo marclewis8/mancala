@@ -28,7 +28,7 @@ export let onClick = (row: number, col: number): boolean => {
     model[row][col] = 0;
     if (row === 0) {
         // we're on top row, which is player 2 moving left
-        if (player === 1) {
+        if (player === 1 || stonesFromBucket === 0) {
             model[row][col] = stonesFromBucket;
             return false;
         }
@@ -59,7 +59,7 @@ export let onClick = (row: number, col: number): boolean => {
     } else {
         // we're on the bottom, which is player 1 moving right
 
-        if (player === 2) {
+        if (player === 2 || stonesFromBucket === 0) {
             model[row][col] = stonesFromBucket;
             return false;
         }
@@ -89,7 +89,7 @@ export let onClick = (row: number, col: number): boolean => {
         drawPlayerTurn(player);
         console.log(model);
     }
-    return false;
+    return true;
 };
 
 main();
