@@ -1,5 +1,5 @@
 import { Application, interaction } from "pixi.js";
-import { model, numStones, onClick, numRows } from "./index-script";
+import { model, numStones, onClick, numRows, p1Score, p2Score } from "./index-script";
 import { numberTypeAnnotation } from "babel-types";
 
 const SCALE_X: number = 100;
@@ -57,11 +57,34 @@ let drawStores = () => {
     p1store.endFill();
     app.stage.addChild(p1store);
 
+    p1store.removeChildren();
+    for (let numStones = 0; numStones < p1Score; numStones++) {
+        let bounds = p1store.getBounds();
+        let stone = PIXI.Sprite.from("rameses.png");
+        stone.scale = new PIXI.Point(.05, .05);
+        stone.anchor.set(.5);
+        stone.x = getRandomInt(bounds.left + 20, bounds.right - 20);
+        stone.y = getRandomInt(bounds.top + 20, bounds.bottom - 20);
+        p1store.addChild(stone);
+    }
+
+
+
     let p2store = new PIXI.Graphics();
     p2store.beginFill(0xffff00);
     p2store.drawRoundedRect(OFFSET, OFFSET - CIRCLE_RADIUS, CIRCLE_RADIUS * 2, CIRCLE_RADIUS * 3 + OFFSET, 30);
     p2store.endFill();
     app.stage.addChild(p2store);
+    p2store.removeChildren();
+    for (let numStones = 0; numStones < p2Score; numStones++) {
+        let bounds = p2store.getBounds();
+        let stone = PIXI.Sprite.from("rameses.png");
+        stone.scale = new PIXI.Point(.05, .05);
+        stone.anchor.set(.5);
+        stone.x = getRandomInt(bounds.left + 20, bounds.right - 20);
+        stone.y = getRandomInt(bounds.top + 20, bounds.bottom - 20);
+        p2store.addChild(stone);
+    }
 };
 
 
@@ -116,7 +139,11 @@ export let getIndexFromClick = (event: interaction.InteractionEvent): string => 
 };
 
 let ourOnClick = (event: interaction.InteractionEvent) => {
-    onClick(event);
+    let stringCoords = getIndexFromClick(event);
+    let coords = stringCoords.split(",");
+    let [row, col] = coords.map(x => parseInt(x, 10));
+    onClick(row, col);
     drawStones();
+    drawStores();
 };
 

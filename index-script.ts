@@ -1,12 +1,12 @@
-import { drawBoard, getIndexFromClick, drawPlayerTurn } from "./board-script";
+import { drawBoard, drawPlayerTurn } from "./board-script";
 import { interaction } from "pixi.js";
 
 export const numStones: number = 48;
 export const numRows: number = 2;
 export const numCols: number = 6;
 export let model: number[][] = [];
-let p1Score: number = 0;
-let p2Score: number = 0;
+export let p1Score: number = 0;
+export let p2Score: number = 0;
 let player: number = 1;
 
 export let main = async () => {
@@ -23,10 +23,7 @@ export let initModel = () => {
     }
 };
 
-export let onClick = (event: interaction.InteractionEvent): boolean => {
-    let stringCoords = getIndexFromClick(event);
-    let coords = stringCoords.split(",");
-    let [row, col] = coords.map(x => parseInt(x, 10));
+export let onClick = (row: number, col: number): boolean => {
     let stonesFromBucket = model[row][col];
     model[row][col] = 0;
     if (row === 0) {
