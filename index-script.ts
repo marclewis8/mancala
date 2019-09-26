@@ -1,4 +1,4 @@
-import { drawBoard, getIndexFromClick } from "./board-script";
+import { drawBoard, getIndexFromClick, drawPlayerTurn } from "./board-script";
 import { interaction } from "pixi.js";
 
 export const numStones: number = 48;
@@ -32,23 +32,48 @@ export let onClick = (event: interaction.InteractionEvent): boolean => {
     if (row === 0) {
         // we're on top row, which is player 2 moving left
         if (player === 1) {
+            model[row][col] = stonesFromBucket;
             return false;
         }
+        let direction = -1;
+        col += direction;
+        for (let i = 0; i < stonesFromBucket; i++) {
+            if (col === -1) {
+                p2Score++;
+                row++;
+                direction *= -1;
+                col += direction;
+            } else if (col === numCols) {
+                i--;
+                row--;
+                direction *= -1;
+                col += direction;
+            } else if (model[row][col] === 0 && i + 1 === stonesFromBucket && row === 0) {
+                p2Score += 1 + model[1][col];
+                model[1][col] = 0;
+            } else {
+                model[row][col]++;
+                col += direction;
+            }
+        }
+        player = 1;
+        drawPlayerTurn(player);
 
     } else {
         // we're on the bottom, which is player 1 moving right
 
         if (player === 2) {
+            model[row][col] = stonesFromBucket;
             return false;
         }
         let direction = 1;
-        col += 1;
+        col += direction;
         for (let i = 0; i < stonesFromBucket; i++) {
             if (col === numCols) {
                 // We're at our bank
                 p1Score++;
                 row--;
-                direction = -1;
+                direction *= -1;
                 col += direction;
             } else if (col === -1) {
                 i--;
@@ -63,8 +88,11 @@ export let onClick = (event: interaction.InteractionEvent): boolean => {
                 col += direction;
             }
         }
+        player = 2;
+        drawPlayerTurn(player);
         console.log(model);
     }
+    return false;
 };
 
 main();

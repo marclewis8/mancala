@@ -8,6 +8,7 @@ const OFFSET: number = 60;
 const CIRCLE_RADIUS: number = 30;
 const NUM_BUCKETS: number = 12;
 let buckets: PIXI.Graphics[][] = [];
+let playerTurn: PIXI.Text = new PIXI.Text("Player 1");
 const app: Application = new Application({ width: window.innerWidth - 20, height: window.innerHeight - 20, backgroundColor: 0xFFFFFF });
 export let drawBoard = (): void => {
 
@@ -19,6 +20,7 @@ export let drawBoard = (): void => {
     drawBuckets();
     drawStores();
     drawStones();
+    app.stage.addChild(playerTurn);
 };
 
 let drawBackground = () => {
@@ -81,6 +83,10 @@ let drawStones = () => {
             }
         }
     }
+};
+
+export let drawPlayerTurn = (p: number) => {
+    playerTurn.text = `Player ${p}`;
 };
 
 let getRandomInt = (min: number, max: number) => {
