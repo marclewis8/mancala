@@ -10,6 +10,11 @@ const NUM_BUCKETS: number = 12;
 let buckets: PIXI.Graphics[][] = [];
 let playerTurn: PIXI.Text = new PIXI.Text("Player 1");
 const app: Application = new Application({ width: window.innerWidth - 20, height: window.innerHeight - 20, backgroundColor: 0xFFFFFF });
+
+
+let p1store = new PIXI.Graphics();
+let p2store = new PIXI.Graphics();
+
 export let drawBoard = (): void => {
 
     document.body.appendChild(app.view);
@@ -18,7 +23,7 @@ export let drawBoard = (): void => {
 
     drawBackground();
     drawBuckets();
-    drawStores();
+    initStores();
     drawStones();
     app.stage.addChild(playerTurn);
 };
@@ -46,16 +51,29 @@ let drawBuckets = () => {
             bucket.on("mousedown", ourOnClick);
             buckets[row][col - 1] = bucket;
             app.stage.addChild(bucket);
+
+            let amountOfStones: PIXI.Text = new PIXI.Text("");
+            // bucket.add              
         }
     }
 };
 
-let drawStores = () => {
-    let p1store = new PIXI.Graphics();
+
+
+let initStores = () => {
+
     p1store.beginFill(0x00ff00);
     p1store.drawRoundedRect(window.innerWidth / 2 + 100, OFFSET - CIRCLE_RADIUS, CIRCLE_RADIUS * 2, CIRCLE_RADIUS * 3 + OFFSET, 30);
     p1store.endFill();
     app.stage.addChild(p1store);
+
+    p2store.beginFill(0xffff00);
+    p2store.drawRoundedRect(OFFSET, OFFSET - CIRCLE_RADIUS, CIRCLE_RADIUS * 2, CIRCLE_RADIUS * 3 + OFFSET, 30);
+    p2store.endFill();
+    app.stage.addChild(p2store);
+};
+
+let drawStores = () => {
 
     p1store.removeChildren();
     for (let numStones = 0; numStones < p1Score; numStones++) {
@@ -68,13 +86,12 @@ let drawStores = () => {
         p1store.addChild(stone);
     }
 
+    let p1amountOfStones: PIXI.Text = new PIXI.Text("" + p1Score);
+    p1store.addChild(p1amountOfStones);
+    p1amountOfStones.position.x = window.innerWidth / 2 + 100;
+    p1amountOfStones.position.y = OFFSET - CIRCLE_RADIUS + 150;
 
 
-    let p2store = new PIXI.Graphics();
-    p2store.beginFill(0xffff00);
-    p2store.drawRoundedRect(OFFSET, OFFSET - CIRCLE_RADIUS, CIRCLE_RADIUS * 2, CIRCLE_RADIUS * 3 + OFFSET, 30);
-    p2store.endFill();
-    app.stage.addChild(p2store);
     p2store.removeChildren();
     for (let numStones = 0; numStones < p2Score; numStones++) {
         let bounds = p2store.getBounds();
@@ -85,6 +102,10 @@ let drawStores = () => {
         stone.y = getRandomInt(bounds.top + 20, bounds.bottom - 20);
         p2store.addChild(stone);
     }
+    let p2amountOfStones: PIXI.Text = new PIXI.Text("" + p2Score);
+    p2store.addChild(p2amountOfStones);
+    p2amountOfStones.position.x = OFFSET;
+    p2amountOfStones.position.y = OFFSET - CIRCLE_RADIUS + 150;
 };
 
 
@@ -95,6 +116,8 @@ let drawStones = () => {
             // Delete this later if we want
             let bucket = buckets[row][col];
             bucket.removeChildren();
+
+            
             for (let numStones = 0; numStones < model[row][col]; numStones++) {
                 let bounds = bucket.getBounds();
                 let stone = PIXI.Sprite.from("rameses.png");
@@ -104,6 +127,11 @@ let drawStones = () => {
                 stone.y = getRandomInt(bounds.top + 20, bounds.bottom - 20);
                 bucket.addChild(stone);
             }
+            let amountOfStones = new PIXI.Text("" + model[row][col]);
+            bucket.addChild(amountOfStones);
+            amountOfStones.position.x = (col + 1) * SCALE_X + OFFSET - 10;
+            amountOfStones.position.y = row * SCALE_Y + OFFSET + 30;    
+            
         }
     }
 };

@@ -40,6 +40,11 @@ export let onClick = (row: number, col: number): boolean => {
                 row++;
                 direction *= -1;
                 col += direction;
+                if (i + 1 === stonesFromBucket) {
+                    player++;
+                    alert("omg p2");
+                }
+
             } else if (col === numCols) {
                 i--;
                 row--;
@@ -52,8 +57,8 @@ export let onClick = (row: number, col: number): boolean => {
                 model[row][col]++;
                 col += direction;
             }
-        }
-        player = 1;
+        }        
+        player--;
         drawPlayerTurn(player);
 
     } else {
@@ -72,6 +77,11 @@ export let onClick = (row: number, col: number): boolean => {
                 row--;
                 direction *= -1;
                 col += direction;
+                if (i + 1 === stonesFromBucket) {
+                    player--;
+                    alert("omg p1");
+                }
+
             } else if (col === -1) {
                 i--;
                 row++;
@@ -85,10 +95,43 @@ export let onClick = (row: number, col: number): boolean => {
                 col += direction;
             }
         }
-        player = 2;
+        player++;
         drawPlayerTurn(player);
         console.log(model);
     }
+
+    let sum1 = model[1].reduce((m, v) => m + v);
+    let sum2 = model[0].reduce((m, v) => m + v);
+    let isGameOver = false;    
+    if (sum1 === 0) {
+        p2Score += sum2;
+
+        for (let i = 0; i < model[0].length; i++) {
+            model[0][i] = 0;
+        }
+        isGameOver = true;
+
+    } else if (sum2 === 0) {
+        p1Score += sum1;
+
+        for (let i = 0; i < model[1].length; i++) {
+            model[1][i] = 0;
+        }
+        isGameOver = true;
+
+    }        
+    // We should move this to ourOnClick, alert triggers before view updates which is not ideal
+    // Or we could just make them do a game state function themselves that gets called every turn
+    if (isGameOver) {
+        if (p1Score > p2Score) {
+            alert("Player One Wins!");
+        } else if (p2Score > p1Score) {
+            alert("Player Two Wins!");
+        } else {
+            alert("Tie Game!");
+        }
+    }
+
     return true;
 };
 
