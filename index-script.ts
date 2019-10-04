@@ -7,7 +7,8 @@ export const numCols: number = 6;
 export let model: number[][] = [];
 export let p1Score: number = 0;
 export let p2Score: number = 0;
-let player: number = 1;
+export let winner: number = 0;
+export let player: number = 1;
 
 export let main = async () => {
     initModel();
@@ -42,9 +43,7 @@ export let onClick = (row: number, col: number): boolean => {
                 col += direction;
                 if (i + 1 === stonesFromBucket) {
                     player++;
-                    alert("omg p2");
                 }
-
             } else if (col === numCols) {
                 i--;
                 row--;
@@ -57,9 +56,8 @@ export let onClick = (row: number, col: number): boolean => {
                 model[row][col]++;
                 col += direction;
             }
-        }        
+        }
         player--;
-        drawPlayerTurn(player);
 
     } else {
         // we're on the bottom, which is player 1 moving right
@@ -79,7 +77,6 @@ export let onClick = (row: number, col: number): boolean => {
                 col += direction;
                 if (i + 1 === stonesFromBucket) {
                     player--;
-                    alert("omg p1");
                 }
 
             } else if (col === -1) {
@@ -96,13 +93,11 @@ export let onClick = (row: number, col: number): boolean => {
             }
         }
         player++;
-        drawPlayerTurn(player);
-        console.log(model);
     }
 
     let sum1 = model[1].reduce((m, v) => m + v);
     let sum2 = model[0].reduce((m, v) => m + v);
-    let isGameOver = false;    
+    let isGameOver = false;
     if (sum1 === 0) {
         p2Score += sum2;
 
@@ -119,19 +114,16 @@ export let onClick = (row: number, col: number): boolean => {
         }
         isGameOver = true;
 
-    }        
-    // We should move this to ourOnClick, alert triggers before view updates which is not ideal
-    // Or we could just make them do a game state function themselves that gets called every turn
+    }
     if (isGameOver) {
         if (p1Score > p2Score) {
-            alert("Player One Wins!");
+            winner = 1;
         } else if (p2Score > p1Score) {
-            alert("Player Two Wins!");
+            winner = 2;
         } else {
-            alert("Tie Game!");
+            winner = -1;
         }
     }
-
     return true;
 };
 

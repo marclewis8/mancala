@@ -1,14 +1,14 @@
 import { Application, interaction } from "pixi.js";
-import { model, numStones, onClick, numRows, p1Score, p2Score } from "./index-script";
-import { numberTypeAnnotation } from "babel-types";
+import { model, numStones, onClick, numRows, p1Score, p2Score, winner, player } from "./index-script";
 
 const SCALE_X: number = 100;
 const SCALE_Y: number = 100;
 const OFFSET: number = 60;
 const CIRCLE_RADIUS: number = 30;
 const NUM_BUCKETS: number = 12;
+let currentPlayer: number = 1;
 let buckets: PIXI.Graphics[][] = [];
-let playerTurn: PIXI.Text = new PIXI.Text("Player 1");
+let playerTurnText: PIXI.Text = new PIXI.Text("Player 1");
 const app: Application = new Application({ width: window.innerWidth - 20, height: window.innerHeight - 20, backgroundColor: 0xFFFFFF });
 
 
@@ -25,7 +25,7 @@ export let drawBoard = (): void => {
     drawBuckets();
     initStores();
     drawStones();
-    app.stage.addChild(playerTurn);
+    app.stage.addChild(playerTurnText);
 };
 
 let drawBackground = () => {
@@ -109,7 +109,7 @@ let drawStores = () => {
 };
 
 
-let drawStones = () => {
+let drawStones = async (): Promise<boolean> => {
     // Draw from the model
     for (let row = 0; row < model.length; row++) {
         for (let col = 0; col < model[row].length; col++) {
@@ -117,7 +117,7 @@ let drawStones = () => {
             let bucket = buckets[row][col];
             bucket.removeChildren();
 
-            
+
             for (let numStones = 0; numStones < model[row][col]; numStones++) {
                 let bounds = bucket.getBounds();
                 let stone = PIXI.Sprite.from("rameses.png");
@@ -130,14 +130,15 @@ let drawStones = () => {
             let amountOfStones = new PIXI.Text("" + model[row][col]);
             bucket.addChild(amountOfStones);
             amountOfStones.position.x = (col + 1) * SCALE_X + OFFSET - 10;
-            amountOfStones.position.y = row * SCALE_Y + OFFSET + 30;    
-            
+            amountOfStones.position.y = row * SCALE_Y + OFFSET + 30;
+
         }
     }
+    return true;
 };
 
 export let drawPlayerTurn = (p: number) => {
-    playerTurn.text = `Player ${p}`;
+    playerTurnText.text = `Player ${p}`;
 };
 
 let getRandomInt = (min: number, max: number) => {
@@ -165,16 +166,34 @@ export let getIndexFromClick = (event: interaction.InteractionEvent): string => 
 
     return "No bounds found";
 };
+let callAlerts = () => {
+    if (winner === -1) {
+        alert("Tie Game!");
+    } else if (winner !== 0) {
+        alert(`Player ${winner} wins!!`);
+    } else {
+        if (player === currentPlayer) {
+            alert(`Player ${player} gets to go again!`);
+        }
+    }
+};
 
 let ourOnClick = (event: interaction.InteractionEvent) => {
     let stringCoords = getIndexFromClick(event);
     let coords = stringCoords.split(",");
     let [row, col] = coords.map(x => parseInt(x, 10));
+    currentPlayer = player;
     if (onClick(row, col)) {
         drawStones();
         drawStores();
+        drawPlayerTurn(player);
+        setTimeout(function () {
+            callAlerts();
+        }, 20);
+        // callAlerts();
     } else {
         alert("Not your turn or your bucket is empty");
     }
 };
+
 
