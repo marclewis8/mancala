@@ -1,5 +1,5 @@
 import { Application, interaction } from "pixi.js";
-import { model, numStones, onClick, numRows, p1Score, p2Score, winner, player } from "./index-script";
+import { model, numStones, onClick, numRows, p1Score, p0Score, winner, player } from "./index-script";
 
 const SCALE_X: number = 100;
 const SCALE_Y: number = 100;
@@ -93,7 +93,7 @@ let drawStores = () => {
 
 
     p2store.removeChildren();
-    for (let numStones = 0; numStones < p2Score; numStones++) {
+    for (let numStones = 0; numStones < p0Score; numStones++) {
         let bounds = p2store.getBounds();
         let stone = PIXI.Sprite.from("rameses.png");
         stone.scale = new PIXI.Point(.05, .05);
@@ -102,7 +102,7 @@ let drawStores = () => {
         stone.y = getRandomInt(bounds.top + 20, bounds.bottom - 20);
         p2store.addChild(stone);
     }
-    let p2amountOfStones: PIXI.Text = new PIXI.Text("" + p2Score);
+    let p2amountOfStones: PIXI.Text = new PIXI.Text("" + p0Score);
     p2store.addChild(p2amountOfStones);
     p2amountOfStones.position.x = OFFSET;
     p2amountOfStones.position.y = OFFSET - CIRCLE_RADIUS + 150;
@@ -169,7 +169,7 @@ export let getIndexFromClick = (event: interaction.InteractionEvent): string => 
 let callAlerts = () => {
     if (winner === -1) {
         alert("Tie Game!");
-    } else if (winner !== 0) {
+    } else if (winner >= 0) {
         alert(`Player ${winner} wins!!`);
     } else {
         if (player === currentPlayer) {

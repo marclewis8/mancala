@@ -6,8 +6,8 @@ export const numRows: number = 2;
 export const numCols: number = 6;
 export let model: number[][] = [];
 export let p1Score: number = 0;
-export let p2Score: number = 0;
-export let winner: number = 0;
+export let p0Score: number = 0;
+export let winner: number = Number.NaN;
 export let player: number = 1;
 
 export let main = async () => {
@@ -15,7 +15,7 @@ export let main = async () => {
     drawBoard();
 };
 
-export let initModel = () => {
+export let initModel = (): void => {
     for (let row = 0; row < numRows; row++) {
         model[row] = [];
         for (let col = 0; col < numCols; col++) {
@@ -28,7 +28,7 @@ export let onClick = (row: number, col: number): boolean => {
     let stonesFromBucket = model[row][col];
     model[row][col] = 0;
     if (row === 0) {
-        // we're on top row, which is player 2 moving left
+        // we're on top row, which is player 0 moving left
         if (player === 1 || stonesFromBucket === 0) {
             model[row][col] = stonesFromBucket;
             return false;
@@ -37,12 +37,13 @@ export let onClick = (row: number, col: number): boolean => {
         col += direction;
         for (let i = 0; i < stonesFromBucket; i++) {
             if (col === -1) {
-                p2Score++;
+                p0Score++;
                 row++;
                 direction *= -1;
                 col += direction;
                 if (i + 1 === stonesFromBucket) {
-                    player++;
+                    // Get to go again
+                    player--;
                 }
             } else if (col === numCols) {
                 i--;
@@ -50,19 +51,19 @@ export let onClick = (row: number, col: number): boolean => {
                 direction *= -1;
                 col += direction;
             } else if (model[row][col] === 0 && i + 1 === stonesFromBucket && row === 0) {
-                p2Score += 1 + model[1][col];
+                p0Score += 1 + model[1][col];
                 model[1][col] = 0;
             } else {
                 model[row][col]++;
                 col += direction;
             }
         }
-        player--;
+        player++;
 
     } else {
         // we're on the bottom, which is player 1 moving right
 
-        if (player === 2 || stonesFromBucket === 0) {
+        if (player === 0 || stonesFromBucket === 0) {
             model[row][col] = stonesFromBucket;
             return false;
         }
@@ -76,7 +77,7 @@ export let onClick = (row: number, col: number): boolean => {
                 direction *= -1;
                 col += direction;
                 if (i + 1 === stonesFromBucket) {
-                    player--;
+                    player++;
                 }
 
             } else if (col === -1) {
@@ -92,39 +93,40 @@ export let onClick = (row: number, col: number): boolean => {
                 col += direction;
             }
         }
-        player++;
+        player--;
     }
-
-    let sum1 = model[1].reduce((m, v) => m + v);
-    let sum2 = model[0].reduce((m, v) => m + v);
-    let isGameOver = false;
-    if (sum1 === 0) {
-        p2Score += sum2;
-
-        for (let i = 0; i < model[0].length; i++) {
-            model[0][i] = 0;
-        }
-        isGameOver = true;
-
-    } else if (sum2 === 0) {
-        p1Score += sum1;
-
-        for (let i = 0; i < model[1].length; i++) {
-            model[1][i] = 0;
-        }
-        isGameOver = true;
-
-    }
-    if (isGameOver) {
-        if (p1Score > p2Score) {
-            winner = 1;
-        } else if (p2Score > p1Score) {
-            winner = 2;
-        } else {
-            winner = -1;
-        }
-    }
+    checkIfGameOver();
     return true;
+};
+
+// TODO: make sure we don't need to return anything here
+export let checkIfGameOver = () => {
+    let sum1 = model[1].reduce((m, v) => m + v);
+    let sum0 = model[0].reduce((m, v) => m + v);
+    if (sum1 === 0) {
+        handleGameOver(0, sum0, sum1);
+    } else if (sum0 === 0) {
+        handleGameOver(1, sum0, sum1);
+    }
+};
+
+export let clearRow = (row: number) => {
+    for (let i = 0; i < model[row].length; i++) {
+        model[row][i] = 0;
+    }
+};
+
+export let handleGameOver = (rowToEmpty: number, sum0: number, sum1: number) => {
+    p0Score += sum0;
+    p1Score += sum1;
+    clearRow(rowToEmpty);
+    if (p1Score > p0Score) {
+        winner = 1;
+    } else if (p0Score > p1Score) {
+        winner = 0;
+    } else {
+        winner = -1;
+    }
 };
 
 main();
