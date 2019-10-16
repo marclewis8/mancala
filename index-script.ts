@@ -101,8 +101,8 @@ export let onClick = (row: number, col: number): boolean => {
 
 // TODO: make sure we don't need to return anything here
 export let checkIfGameOver = () => {
-    let sum1 = model[1].reduce((m, v) => m + v);
-    let sum0 = model[0].reduce((m, v) => m + v);
+    let sum1 = sumRow(1);
+    let sum0 = sumRow(0);
     if (sum1 === 0) {
         handleGameOver(0, sum0, sum1);
     } else if (sum0 === 0) {
@@ -111,9 +111,17 @@ export let checkIfGameOver = () => {
 };
 
 export let clearRow = (row: number) => {
-    for (let i = 0; i < model[row].length; i++) {
-        model[row][i] = 0;
+    for (let col = 0; col < model[row].length; col++) {
+        model[row][col] = 0;
     }
+};
+
+export let sumRow = (row: number) => {
+    let count = 0;
+    for (let col = 0; col < numCols; col++) {
+        count += model[row][col];
+    }
+    return count;
 };
 
 export let handleGameOver = (rowToEmpty: number, sum0: number, sum1: number) => {
