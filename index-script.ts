@@ -1,5 +1,6 @@
 import { drawBoard, drawPlayerTurn } from "./board-script";
 import { interaction } from "pixi.js";
+import { assertLVal } from "babel-types";
 
 export const numStones: number = 48;
 export const numRows: number = 2;
@@ -8,7 +9,7 @@ export let model: number[][] = [];
 export let p1Score: number = 0;
 export let p0Score: number = 0;
 export let winner: number = Number.NaN;
-export let player: number = 1;
+export let player: number = 0;
 
 export let main = async () => {
     initModel();
@@ -25,75 +26,77 @@ export let initModel = (): void => {
 };
 
 export let onClick = (row: number, col: number): boolean => {
-    let stonesFromBucket = model[row][col];
+    let stonesInHand = model[row][col];
     model[row][col] = 0;
     if (row === 0) {
         // we're on top row, which is player 0 moving left
-        if (player === 1 || stonesFromBucket === 0) {
-            model[row][col] = stonesFromBucket;
+        if (player === 1 || stonesInHand === 0) {
+            model[row][col] = stonesInHand;
             return false;
         }
         let direction = -1;
-        col += direction;
-        for (let i = 0; i < stonesFromBucket; i++) {
+        let goAgain = false;
+        while (stonesInHand > 0) {
+            col += direction;
             if (col === -1) {
                 p0Score++;
                 row++;
                 direction *= -1;
-                col += direction;
-                if (i + 1 === stonesFromBucket) {
+                if (stonesInHand === 1) {
                     // Get to go again
-                    player--;
+                    goAgain = true;
                 }
+                stonesInHand--;
             } else if (col === numCols) {
-                i--;
                 row--;
                 direction *= -1;
-                col += direction;
-            } else if (model[row][col] === 0 && i + 1 === stonesFromBucket && row === 0) {
+            } else if (model[row][col] === 0 && stonesInHand === 1 && row === 0) {
                 p0Score += 1 + model[1][col];
                 model[1][col] = 0;
+                stonesInHand--;
             } else {
                 model[row][col]++;
-                col += direction;
+                stonesInHand--;
             }
         }
-        player++;
-
+        if (!goAgain) {
+            player = 1;
+        }
     } else {
         // we're on the bottom, which is player 1 moving right
 
-        if (player === 0 || stonesFromBucket === 0) {
-            model[row][col] = stonesFromBucket;
+        if (player === 0 || stonesInHand === 0) {
+            model[row][col] = stonesInHand;
             return false;
         }
+        let goAgain = false;
         let direction = 1;
-        col += direction;
-        for (let i = 0; i < stonesFromBucket; i++) {
+        while (stonesInHand > 0) {
+            col += direction;
             if (col === numCols) {
                 // We're at our bank
                 p1Score++;
                 row--;
                 direction *= -1;
-                col += direction;
-                if (i + 1 === stonesFromBucket) {
-                    player++;
+                if (stonesInHand === 1) {
+                    goAgain = true;
                 }
-
+                stonesInHand--;
             } else if (col === -1) {
-                i--;
                 row++;
                 direction = 1;
-                col += direction;
-            } else if (model[row][col] === 0 && i + 1 === stonesFromBucket && row === 1) {
+            } else if (model[row][col] === 0 && stonesInHand === 1 && row === 1) {
                 p1Score += 1 + model[0][col];
                 model[0][col] = 0;
+                stonesInHand--;
             } else {
                 model[row][col]++;
-                col += direction;
+                stonesInHand--;
             }
         }
-        player--;
+        if (!goAgain) {
+            player = 0;
+        }
     }
     checkIfGameOver();
     return true;
@@ -103,10 +106,18 @@ export let onClick = (row: number, col: number): boolean => {
 export let checkIfGameOver = () => {
     let sum1 = sumRow(1);
     let sum0 = sumRow(0);
-    if (sum1 === 0) {
-        handleGameOver(0, sum0, sum1);
-    } else if (sum0 === 0) {
-        handleGameOver(1, sum0, sum1);
+    if (sum0 === 0 || sum1 === 0) {
+        clearRow(0);
+        clearRow(1);
+        p0Score += sum0;
+        p1Score += sum1;
+        if (p1Score > p0Score) {
+            winner = 1;
+        } else if (p0Score > p1Score) {
+            winner = 0;
+        } else {
+            winner = -1;
+        }
     }
 };
 
@@ -124,10 +135,9 @@ export let sumRow = (row: number) => {
     return count;
 };
 
-export let handleGameOver = (rowToEmpty: number, sum0: number, sum1: number) => {
+export let handleGameOver = (sum0: number, sum1: number) => {
     p0Score += sum0;
     p1Score += sum1;
-    clearRow(rowToEmpty);
     if (p1Score > p0Score) {
         winner = 1;
     } else if (p0Score > p1Score) {

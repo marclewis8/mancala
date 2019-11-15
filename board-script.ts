@@ -9,8 +9,7 @@ const NUM_BUCKETS: number = 12;
 let currentPlayer: number = 1;
 let buckets: PIXI.Graphics[][] = [];
 let playerTurnText: PIXI.Text = new PIXI.Text("Player 1");
-const app: Application = new Application({ width: window.innerWidth - 20, height: window.innerHeight - 20, backgroundColor: 0xFFFFFF });
-
+const app: Application = (window !== undefined) ? new Application({ width: window.innerWidth - 20, height: window.innerHeight - 20, backgroundColor: 0xFFFFFF }) : new Application();
 
 let p1store = new PIXI.Graphics();
 let p2store = new PIXI.Graphics();
@@ -58,12 +57,13 @@ let drawBuckets = () => {
     }
 };
 
+let boardX = (window !== undefined) ? window.innerWidth / 2 + 100 : 42;
 
 
 let initStores = () => {
 
     p1store.beginFill(0x00ff00);
-    p1store.drawRoundedRect(window.innerWidth / 2 + 100, OFFSET - CIRCLE_RADIUS, CIRCLE_RADIUS * 2, CIRCLE_RADIUS * 3 + OFFSET, 30);
+    p1store.drawRoundedRect(boardX, OFFSET - CIRCLE_RADIUS, CIRCLE_RADIUS * 2, CIRCLE_RADIUS * 3 + OFFSET, 30);
     p1store.endFill();
     app.stage.addChild(p1store);
 
@@ -88,7 +88,7 @@ let drawStores = () => {
 
     let p1amountOfStones: PIXI.Text = new PIXI.Text("" + p1Score);
     p1store.addChild(p1amountOfStones);
-    p1amountOfStones.position.x = window.innerWidth / 2 + 100;
+    p1amountOfStones.position.x = boardX;
     p1amountOfStones.position.y = OFFSET - CIRCLE_RADIUS + 150;
 
 
@@ -187,13 +187,10 @@ let ourOnClick = (event: interaction.InteractionEvent) => {
         drawStones();
         drawStores();
         drawPlayerTurn(player);
-        setTimeout(function () {
-            callAlerts();
-        }, 20);
-        // callAlerts();
+        setTimeout(function () { callAlerts(); }, 20);
+        
     } else {
         alert("Not your turn or your bucket is empty");
     }
 };
-
 

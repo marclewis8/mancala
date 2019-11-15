@@ -1,5 +1,10 @@
 import * as student from "./student-script";
 import { expect, assert } from "chai";
+import { player } from "./index-script";
+// import { require } from "";
+// import { gulp } from ""
+
+
 
 let assertFunctionDefined = (name: string, input: {}) => {
     if (input === undefined) {
@@ -28,9 +33,40 @@ describe("2. clearRow", () => {
         Ref.clearRow(1);
         student.clearRow(0);
         student.clearRow(1);
-        expect(Ref.model).deep.equal(student.model);
+        expect(student.model).deep.equal(Ref.model);
 
     });
+});
+
+describe("3. sumRow", () => {
+    it("should take the sum of a row in the model", () => {
+        assertFunctionDefined("sumRow", student.sumRow);
+        Ref.initModel();
+        student.initModel();
+        let studentResult = student.sumRow(0);
+        let refResult = Ref.sumRow(0);
+        expect(studentResult).to.deep.equal(refResult);        
+    });
+    
+});
+
+describe("4. onclick", () => {
+    it("should correctly handle player 0's movements", () => {
+       
+       it("should not move stones when player 0 clicks on an empty bucket", () => {
+            Ref.player = 1;    
+            
+            Ref.initModel();
+            student.initModel();
+
+            Ref.onClick(1, 5);
+
+       }); 
+
+    });
+
+
+
 });
 
 describe("0. copyArr", () => {
@@ -78,7 +114,7 @@ module Ref {
     export let p1Score: number = 0;
     export let p0Score: number = 0;
     export let winner: number = Number.NaN;
-    export let player: number = 1;
+    export let player: number = 0;
 
     export let main = async () => {
         initModel();
