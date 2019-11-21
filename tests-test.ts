@@ -1,8 +1,7 @@
 import * as student from "./student-script";
 import { expect, assert } from "chai";
 import { player } from "./index-script";
-// import { require } from "";
-// import { gulp } from ""
+
 
 
 
@@ -48,14 +47,22 @@ describe("3. sumRow", () => {
         expect(studentResult).to.deep.equal(refResult);        
     });
     
+    it("should take the sum of a row in the model", () => {
+        assertFunctionDefined("sumRow", student.sumRow);
+        Ref.initModel();
+        student.initModel();
+
+
+    });
+
 });
 
 describe("4. onclick", () => {
     it("should correctly handle player 0's movements", () => {
        
        it("should not move stones when player 0 clicks on an empty bucket", () => {
-            Ref.player = 1;    
-            
+            Ref.player = 1;
+
             Ref.initModel();
             student.initModel();
 
