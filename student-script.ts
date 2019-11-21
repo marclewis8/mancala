@@ -11,11 +11,11 @@ export let player: number = 0;
 
 export let main = async () => {
     initModel();
-    drawBoard();
+    // drawBoard();
 };
 
 export let initModel = (): void => {
-    for (let row = 0; row < numRows; row++) {
+    for (let row = 0; row < numRows - 1; row++) {
         model[row] = [];
         for (let col = 0; col < numCols; col++) {
             model[row][col] = 4;

@@ -1,6 +1,6 @@
 import * as student from "./student-script";
 import { expect, assert } from "chai";
-import { player } from "./index-script";
+// import { player } from "./index-script";
 
 
 
@@ -38,42 +38,30 @@ describe("2. clearRow", () => {
 });
 
 describe("3. sumRow", () => {
-    it("should take the sum of a row in the model", () => {
+    it("should take the sum of a row in the model. Note that we are testing randomly generated numbers here", () => {
         assertFunctionDefined("sumRow", student.sumRow);
-        Ref.initModel();
-        student.initModel();
-        let studentResult = student.sumRow(0);
-        let refResult = Ref.sumRow(0);
-        expect(studentResult).to.deep.equal(refResult);        
+        let randomModel = genRandomModel(2, 6);
+        if (!setModel(student.model, randomModel)) {
+            assert(false, "Incorrect number of rows or columns in model");
+        }
+        setModel(Ref.model, randomModel);
+        expect(student.sumRow(0)).to.deep.equal(Ref.sumRow(0));
+        expect(student.sumRow(1)).to.deep.equal(Ref.sumRow(1));
     });
-    
-    it("should take the sum of a row in the model", () => {
-        assertFunctionDefined("sumRow", student.sumRow);
-        Ref.initModel();
-        student.initModel();
-
-
-    });
-
 });
 
 describe("4. onclick", () => {
     it("should correctly handle player 0's movements", () => {
-       
-       it("should not move stones when player 0 clicks on an empty bucket", () => {
+
+        it("should not move stones when player 0 clicks on an empty bucket", () => {
             Ref.player = 1;
 
             Ref.initModel();
             student.initModel();
 
             Ref.onClick(1, 5);
-
-       }); 
-
+        });
     });
-
-
-
 });
 
 describe("0. copyArr", () => {
@@ -261,5 +249,26 @@ module Ref {
 
 }
 
+// Test helpers
+let setModel = (destModel: number[][], sourceModel: number[][]): boolean => {
+    if (destModel.length !== 2 || destModel[0].length !== 6) {
+        return false;
+    }
+    for (let row = 0; row < 2; row++) {
+        for (let col = 0; col < 6; col++) {
+            destModel[row][col] = sourceModel[row][col];
+        }
+    }
+    return true;
+};
 
-
+let genRandomModel = (numRows: number, numCols: number): number[][] => {
+    let output: number[][] = [];
+    for (let row = 0; row < numRows; row++) {
+        output[row] = [];
+        for (let col = 0; col < numCols; col++) {
+            output[row][col] = Math.floor(Math.random() * 100);
+        }
+    }
+    return output;
+};
