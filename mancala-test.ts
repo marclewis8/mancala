@@ -52,15 +52,32 @@ describe("3. sumRow", () => {
 
 describe("4. onclick", () => {
     it("should correctly handle player 0's movements", () => {
+<<<<<<< HEAD:tests-test.ts
 
         it("should not move stones when player 0 clicks on an empty bucket", () => {
+=======
+       
+       it(" will pass - should not move stones when player 0 clicks on an empty bucket", () => {
+>>>>>>> Add nested test for onclick:mancala-test.ts
             Ref.player = 1;
 
             Ref.initModel();
             student.initModel();
 
+            let copy = copyArr(Ref.model);
             Ref.onClick(1, 5);
+<<<<<<< HEAD:tests-test.ts
         });
+=======
+            expect(Ref.model).to.deep.equal(copy);
+       }); 
+
+       it("will fail", () => {
+       
+            expect(3).to.deep.equal(2);
+
+       });
+>>>>>>> Add nested test for onclick:mancala-test.ts
     });
 });
 
