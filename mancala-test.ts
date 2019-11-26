@@ -1,5 +1,6 @@
 import * as student from "./student-script";
 import { expect, assert } from "chai";
+import { assertFunction } from "babel-types";
 // import { player } from "./index-script";
 
 
@@ -14,6 +15,26 @@ let assertFunctionDefined = (name: string, input: {}) => {
     }
     expect(input).to.be.an("function");
 };
+
+let assertVariableDefined = (name: string, input: {}) => {
+    if (input === undefined) {
+        throw new Error(
+            "Expect the variable `" + name +
+            "` to be defined. Check spelling and case, and be sure you exported the variable."
+        );
+    }
+    expect(input).to.be.an("variable");
+};
+
+describe("0. Exports", () => {
+
+    it("should have all the necessary exported variables and functions.", () => {
+
+        assertVariableDefined("player", student.player);
+
+    });
+
+});
 
 describe("1. initModel", () => {
     it("Model should be initialized with all 4s", () => {
@@ -50,35 +71,84 @@ describe("3. sumRow", () => {
     });
 });
 
-describe("4. onclick", () => {
-    it("should correctly handle player 0's movements", () => {
-<<<<<<< HEAD:tests-test.ts
+describe("4. onclick for player 0", () => {
 
-        it("should not move stones when player 0 clicks on an empty bucket", () => {
-=======
-       
-       it(" will pass - should not move stones when player 0 clicks on an empty bucket", () => {
->>>>>>> Add nested test for onclick:mancala-test.ts
-            Ref.player = 1;
+    it("should not move stones when player 0 clicks on a bucket in player 1's row", () => {
 
-            Ref.initModel();
-            student.initModel();
+        assertFunctionDefined("initModel", student.initModel);
+        assertFunctionDefined("onClick", student.onClick);
 
-            let copy = copyArr(Ref.model);
-            Ref.onClick(1, 5);
-<<<<<<< HEAD:tests-test.ts
-        });
-=======
-            expect(Ref.model).to.deep.equal(copy);
-       }); 
+        student.initModel();
 
-       it("will fail", () => {
-       
-            expect(3).to.deep.equal(2);
+        // player 0 clicks on bucket in row 1
+        let copy = copyArr(student.model);
+        let result = student.onClick(1, 1);
 
-       });
->>>>>>> Add nested test for onclick:mancala-test.ts
+        expect(result).to.equal(false); // should return false
+        expect(student.model).to.deep.equal(copy); // should be no internal board change
+
     });
+
+    it("should not move stones when player 0 clicks on an empty bucket", () => {
+
+        assertFunctionDefined("initModel", student.initModel);
+        assertFunctionDefined("onClick", student.onClick);
+
+        student.initModel();
+
+        student.onClick(0, 1); // create empty bucket on player 0's row
+        student.onClick(1, 3); // take a turn for player 1
+
+        let copy = copyArr(student.model);
+        let result = student.onClick(0, 1);
+
+        expect(result).to.equal(false);
+        expect(student.model).to.deep.equal(copy);
+
+    });
+
+    it("should add a stone to player 0's store when the loop reaches the left edge", () => {
+
+        assertFunctionDefined("initModel", student.initModel);
+        assertFunctionDefined("onClick", student.onClick);
+        assertVariableDefined("p0Score", student.p0Score);
+
+        student.initModel();
+
+        let result = student.onClick(0, 1);
+        expect(result).to.equal(true); // should be a successful move
+        expect(student.p0Score).to.equal(1); // should deposit one in p0score
+
+    });
+
+    it("should skip over player 1's store when the loop reaches the right edge", () => {
+
+        assertFunctionDefined("initModel", student.initModel);
+        assertFunctionDefined("onClick", student.onClick);
+        assertVariableDefined("p1score", student.p1Score);
+
+        let example = [[10, 1, 1, 1, 1, 1],
+        [1, 1, 1, 1, 1, 1]];
+        setModel(student.model, example);
+
+        let score = student.p1Score;
+        student.onClick(0, 0);
+        expect(student.p1Score).to.equal(score); // score shouldn't change after click
+    });
+
+    it("should have player 0 go again when the last stone deposited went into player 0's store", () => {
+
+        assertFunctionDefined("initModel", student.initModel);
+        assertFunctionDefined("onClick", student.onClick);
+        assertVariableDefined("player", student.player);
+
+        student.initModel();
+
+        let playerBeforeClick = student.player;
+        student.onClick(0, 3);
+        expect(student.player).to.equal(playerBeforeClick);
+    });
+
 });
 
 describe("0. copyArr", () => {
