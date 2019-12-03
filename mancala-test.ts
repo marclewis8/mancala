@@ -1,6 +1,6 @@
 import * as student from "./student-script";
 import { expect, assert } from "chai";
-import { assertFunction } from "babel-types";
+import { assertFunction, assertUnaryExpression } from "babel-types";
 // import { player } from "./index-script";
 
 
@@ -23,7 +23,7 @@ let assertVariableDefined = (name: string, input: {}) => {
             "` to be defined. Check spelling and case, and be sure you exported the variable."
         );
     }
-    expect(input).to.be.an("variable");
+    expect(input).to.be.an("number");
 };
 
 describe("0. Exports", () => {
@@ -49,12 +49,13 @@ describe("2. clearRow", () => {
     it("should set a row in the model to be all 0s", () => {
         assertFunctionDefined("clearRow", student.clearRow);
         Ref.initModel();
+        student.initModel();
         Ref.clearRow(0);
-        Ref.clearRow(1);
         student.clearRow(0);
+        expect(student.model).deep.equal(Ref.model);
+        Ref.clearRow(1);
         student.clearRow(1);
         expect(student.model).deep.equal(Ref.model);
-
     });
 });
 
@@ -83,6 +84,7 @@ describe("4. onclick for player 0", () => {
         // player 0 clicks on bucket in row 1
         let copy = copyArr(student.model);
         let result = student.onClick(1, 1);
+        Ref.onClick(1, 1);
 
         expect(result).to.equal(false); // should return false
         expect(student.model).to.deep.equal(copy); // should be no internal board change
@@ -95,16 +97,20 @@ describe("4. onclick for player 0", () => {
         assertFunctionDefined("onClick", student.onClick);
 
         student.initModel();
+        Ref.initModel();
 
         student.onClick(0, 1); // create empty bucket on player 0's row
         student.onClick(1, 3); // take a turn for player 1
+
+        // Any call done to student should be done to Ref since we can't modify scores
+        Ref.onClick(0, 1);
+        Ref.onClick(1, 3);
 
         let copy = copyArr(student.model);
         let result = student.onClick(0, 1);
 
         expect(result).to.equal(false);
         expect(student.model).to.deep.equal(copy);
-
     });
 
     it("should add a stone to player 0's store when the loop reaches the left edge", () => {
@@ -114,11 +120,14 @@ describe("4. onclick for player 0", () => {
         assertVariableDefined("p0Score", student.p0Score);
 
         student.initModel();
+        Ref.initModel();
 
         let result = student.onClick(0, 1);
-        expect(result).to.equal(true); // should be a successful move
-        expect(student.p0Score).to.equal(1); // should deposit one in p0score
+        Ref.onClick(0, 1);
 
+        // Testing against Ref because we can't reset number variables
+        expect(result).to.equal(true); // should be a successful move
+        expect(student.p0Score).to.equal(Ref.p0Score); // should deposit one in p0score
     });
 
     it("should skip over player 1's store when the loop reaches the right edge", () => {
@@ -127,26 +136,66 @@ describe("4. onclick for player 0", () => {
         assertFunctionDefined("onClick", student.onClick);
         assertVariableDefined("p1score", student.p1Score);
 
-        let example = [[10, 1, 1, 1, 1, 1],
-        [1, 1, 1, 1, 1, 1]];
-        setModel(student.model, example);
+        let startingState = [
+            [10, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1]];
+        setModel(student.model, startingState);
+        setModel(Ref.model, startingState);
 
         let score = student.p1Score;
         student.onClick(0, 0);
+        Ref.onClick(0, 0);
         expect(student.p1Score).to.equal(score); // score shouldn't change after click
     });
 
     it("should have player 0 go again when the last stone deposited went into player 0's store", () => {
-
         assertFunctionDefined("initModel", student.initModel);
         assertFunctionDefined("onClick", student.onClick);
         assertVariableDefined("player", student.player);
 
         student.initModel();
+        Ref.initModel();
 
-        let playerBeforeClick = student.player;
         student.onClick(0, 3);
-        expect(student.player).to.equal(playerBeforeClick);
+        Ref.onClick(0, 3);
+        expect(student.player).to.equal(Ref.player);
+    });
+
+    it("should steal from player 1 when last stone is dropped in empty bucket", () => {
+        assertFunctionDefined("initModel", student.initModel);
+        assertFunctionDefined("onClick", student.onClick);
+        assertVariableDefined("player", student.player);
+
+        Ref.initModel();
+        student.initModel();
+        let startingState = [
+            [6, 8, 8, 1, 0, 1],
+            [0, 6, 5, 5, 5, 0]
+        ];
+        setModel(student.model, startingState);
+        setModel(Ref.model, startingState);
+        student.onClick(0, 5);
+        Ref.onClick(0, 5);
+        expect(student.p0Score).to.equal(Ref.p0Score);
+        expect(student.model).to.deep.equal(Ref.model);
+    });
+
+    it("should pass a RIGOROUS stress test of 1000 random clicks", () => {
+        student.initModel();
+        Ref.initModel();
+        let startingState = [
+            [10000, 10000, 10000, 10000, 10000, 10000],
+            [10000, 10000, 10000, 10000, 10000, 10000]
+        ];
+        setModel(student.model, startingState);
+        setModel(Ref.model, startingState);
+        for (let i = 0; i < 1000; i++) {
+            let row = Math.floor(Math.random() * 2);
+            let col = Math.floor(Math.random() * 6);
+            Ref.onClick(row, col);
+            student.onClick(row, col);
+        }
+        expect(student.model).to.deep.equal(Ref.model);
     });
 
 });
@@ -188,6 +237,13 @@ let copyArr = <T>(input: T[][]): T[][] => {
     return output;
 };
 
+let initStudentModel = () => {
+    setModel(student.model, [
+        [4, 4, 4, 4, 4, 4],
+        [4, 4, 4, 4, 4, 4]
+    ]);
+};
+
 module Ref {
     export const numStones: number = 48;
     export const numRows: number = 2;
@@ -226,18 +282,21 @@ module Ref {
             while (stonesInHand > 0) {
                 col += direction;
                 if (col === -1) {
+                    // should add a stone to player 0's store when the loop reaches the left edge
                     p0Score++;
                     row++;
                     direction *= -1;
                     if (stonesInHand === 1) {
-                        // Get to go again
+                        // should have player 0 go again when the last stone deposited went into player 0's store
                         goAgain = true;
                     }
                     stonesInHand--;
                 } else if (col === numCols) {
+                    // should skip over player 1's store when the loop reaches the right edge
                     row--;
                     direction *= -1;
                 } else if (model[row][col] === 0 && stonesInHand === 1 && row === 0) {
+                    // should steal from player 1 when last stone is dropped in empty bucket
                     p0Score += 1 + model[1][col];
                     model[1][col] = 0;
                     stonesInHand--;

@@ -1,5 +1,8 @@
 import { drawBoard, drawPlayerTurn } from "./board-script";
 
+
+
+
 export const numStones: number = 48;
 export const numRows: number = 2;
 export const numCols: number = 6;
@@ -15,7 +18,7 @@ export let main = async () => {
 };
 
 export let initModel = (): void => {
-    for (let row = 0; row < numRows - 1; row++) {
+    for (let row = 0; row < numRows; row++) {
         model[row] = [];
         for (let col = 0; col < numCols; col++) {
             model[row][col] = 4;
@@ -37,18 +40,21 @@ export let onClick = (row: number, col: number): boolean => {
         while (stonesInHand > 0) {
             col += direction;
             if (col === -1) {
+                // should add a stone to player 0's store when the loop reaches the left edge
                 p0Score++;
                 row++;
                 direction *= -1;
                 if (stonesInHand === 1) {
-                    // Get to go again
+                    // should have player 0 go again when the last stone deposited went into player 0's store
                     goAgain = true;
                 }
                 stonesInHand--;
             } else if (col === numCols) {
+                // should skip over player 1's store when the loop reaches the right edge
                 row--;
                 direction *= -1;
             } else if (model[row][col] === 0 && stonesInHand === 1 && row === 0) {
+                // should steal from player 1 when last stone is dropped in empty bucket
                 p0Score += 1 + model[1][col];
                 model[1][col] = 0;
                 stonesInHand--;
@@ -88,7 +94,7 @@ export let onClick = (row: number, col: number): boolean => {
                 model[0][col] = 0;
                 stonesInHand--;
             } else {
-                model[row][col]++;
+                // model[row][col]++;
                 stonesInHand--;
             }
         }
@@ -134,6 +140,7 @@ export let sumRow = (row: number) => {
 };
 
 export let handleGameOver = (sum0: number, sum1: number) => {
+    console.log("handle game over got called");
     p0Score += sum0;
     p1Score += sum1;
     if (p1Score > p0Score) {
@@ -144,5 +151,3 @@ export let handleGameOver = (sum0: number, sum1: number) => {
         winner = -1;
     }
 };
-
-main();
