@@ -6,9 +6,9 @@ const SCALE_Y: number = 100;
 const OFFSET: number = 60;
 const CIRCLE_RADIUS: number = 30;
 const NUM_BUCKETS: number = 12;
-let currentPlayer: number = 1;
+let currentPlayer: number = 0;
 let buckets: PIXI.Graphics[][] = [];
-let playerTurnText: PIXI.Text = new PIXI.Text("Player 1");
+let playerTurnText: PIXI.Text = new PIXI.Text(`Player ${currentPlayer}`);
 const app: Application = (window !== undefined) ? new Application({ width: window.innerWidth - 20, height: window.innerHeight - 20, backgroundColor: 0xFFFFFF }) : new Application();
 
 let p1store = new PIXI.Graphics();

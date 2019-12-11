@@ -94,7 +94,7 @@ export let onClick = (row: number, col: number): boolean => {
                 model[0][col] = 0;
                 stonesInHand--;
             } else {
-                // model[row][col]++;
+                model[row][col]++;
                 stonesInHand--;
             }
         }

@@ -180,7 +180,7 @@ describe("4. onclick for player 0", () => {
         expect(student.model).to.deep.equal(Ref.model);
     });
 
-    it("should pass a RIGOROUS stress test of 1000 random clicks", () => {
+    it("should pass a RIGOROUS stress test of 1 random click", () => {
         student.initModel();
         Ref.initModel();
         let startingState = [
@@ -189,7 +189,7 @@ describe("4. onclick for player 0", () => {
         ];
         setModel(student.model, startingState);
         setModel(Ref.model, startingState);
-        for (let i = 0; i < 1000; i++) {
+        for (let i = 0; i < 1; i++) {
             let row = Math.floor(Math.random() * 2);
             let col = Math.floor(Math.random() * 6);
             Ref.onClick(row, col);
@@ -198,6 +198,49 @@ describe("4. onclick for player 0", () => {
         expect(student.model).to.deep.equal(Ref.model);
     });
 
+});
+
+describe("5. onClick for player 1", () => {
+    it("should not move stones when player 1 clicks on a bucket in player 0's row.", () => {
+
+        assertFunctionDefined("initModel", student.initModel);
+        assertFunctionDefined("onClick", student.onClick);
+
+        student.initModel();
+
+        // player 1 clicks on bucket in row 0
+        let copy = copyArr(student.model);
+        let result = student.onClick(0, 1);
+        Ref.onClick(0, 1);
+
+        expect(result).to.equal(false); // should return false
+        expect(student.model).to.deep.equal(copy); // should be no internal board change
+    });
+
+
+    it("should not move stones when player 1 clicks on an empty bucket", () => {
+        // TODO
+        assertFunctionDefined("initModel", student.initModel);
+        assertFunctionDefined("onClick", student.onClick);
+
+        student.initModel();
+        Ref.initModel();
+
+        student.onClick(0, 5); // take a turn for player 0 
+        student.onClick(1, 3); // create empty bucket on player 1's row
+        // student.onClick(); // take another turn for player 0
+         
+
+        // Any call done to student should be done to Ref since we can't modify scores
+        Ref.onClick(0, 5);
+        Ref.onClick(1, 3);
+
+        let copy = copyArr(student.model);
+        let result = student.onClick(1, 1);
+
+        expect(result).to.equal(false);
+        expect(student.model).to.deep.equal(copy);
+    });
 });
 
 describe("0. copyArr", () => {
