@@ -1,11 +1,5 @@
 import { drawBoard, drawPlayerTurn } from "./board-script";
 
-
-
-
-export const numStones: number = 48;
-export const numRows: number = 2;
-export const numCols: number = 6;
 export let model: number[][] = [];
 export let p1Score: number = 0;
 export let p0Score: number = 0;
@@ -18,9 +12,9 @@ export let main = async () => {
 };
 
 export let initModel = (): void => {
-    for (let row = 0; row < numRows; row++) {
+    for (let row = 0; row < 2; row++) {
         model[row] = [];
-        for (let col = 0; col < numCols; col++) {
+        for (let col = 0; col < 6; col++) {
             model[row][col] = 4;
         }
     }
@@ -49,7 +43,7 @@ export let onClick = (row: number, col: number): boolean => {
                     goAgain = true;
                 }
                 stonesInHand--;
-            } else if (col === numCols) {
+            } else if (col === 6) {
                 // should skip over player 1's store when the loop reaches the right edge
                 row--;
                 direction *= -1;
@@ -77,7 +71,7 @@ export let onClick = (row: number, col: number): boolean => {
         let direction = 1;
         while (stonesInHand > 0) {
             col += direction;
-            if (col === numCols) {
+            if (col === 6) {
                 // We're at our bank
                 p1Score++;
                 row--;
@@ -133,7 +127,7 @@ export let clearRow = (row: number) => {
 
 export let sumRow = (row: number) => {
     let count = 0;
-    for (let col = 0; col < numCols; col++) {
+    for (let col = 0; col < 6; col++) {
         count += model[row][col];
     }
     return count;
