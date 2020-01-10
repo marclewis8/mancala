@@ -5,21 +5,18 @@ const SCALE_X: number = 100;
 const SCALE_Y: number = 100;
 const OFFSET: number = 60;
 const CIRCLE_RADIUS: number = 30;
+let boardX = window.innerWidth / 2 + 100;
 const NUM_BUCKETS: number = 12;
 let currentPlayer: number = 0;
 let buckets: PIXI.Graphics[][] = [];
 let playerTurnText: PIXI.Text = new PIXI.Text(`Player ${currentPlayer}`);
-const app: Application = (window !== undefined) ? new Application({ width: window.innerWidth - 20, height: window.innerHeight - 20, backgroundColor: 0xFFFFFF }) : new Application();
+const app: Application = new Application({ width: window.innerWidth - 20, height: window.innerHeight - 20, backgroundColor: 0xFFFFFF });
 
 let p1store = new PIXI.Graphics();
 let p2store = new PIXI.Graphics();
 
 export let drawBoard = (): void => {
-
     document.body.appendChild(app.view);
-
-    // Initialize the pixi Graphics class
-
     drawBackground();
     drawBuckets();
     initStores();
@@ -32,8 +29,8 @@ let drawBackground = () => {
     board.beginFill(0x0000ff);
     board.drawRoundedRect(0, 0, app.view.width, app.view.height, 30);
     board.endFill();
-    board.interactive = true;
-    board.on("mousedown", (event: interaction.InteractionEvent) => { console.log("we clicked"); });
+    // board.interactive = true;
+    // board.on("mousedown", (event: interaction.InteractionEvent) => { console.log("we clicked"); });
     app.stage.addChild(board);
 };
 
@@ -56,8 +53,6 @@ let drawBuckets = () => {
         }
     }
 };
-
-let boardX = (window !== undefined) ? window.innerWidth / 2 + 100 : 42;
 
 
 let initStores = () => {
@@ -109,7 +104,7 @@ let drawStores = () => {
 };
 
 
-let drawStones = async (): Promise<boolean> => {
+let drawStones = (): void => {
     // Draw from the model
     for (let row = 0; row < model.length; row++) {
         for (let col = 0; col < model[row].length; col++) {
@@ -134,7 +129,6 @@ let drawStones = async (): Promise<boolean> => {
 
         }
     }
-    return true;
 };
 
 export let drawPlayerTurn = (p: number) => {
@@ -166,15 +160,14 @@ export let getIndexFromClick = (event: interaction.InteractionEvent): string => 
 
     return "No bounds found";
 };
+
 let callAlerts = () => {
     if (winner === -1) {
         alert("Tie Game!");
     } else if (winner >= 0) {
         alert(`Player ${winner} wins!!`);
-    } else {
-        if (player === currentPlayer) {
-            alert(`Player ${player} gets to go again!`);
-        }
+    } else if (player === currentPlayer) {
+        alert(`Player ${player} gets to go again!`);
     }
 };
 
@@ -188,9 +181,7 @@ let ourOnClick = (event: interaction.InteractionEvent) => {
         drawStores();
         drawPlayerTurn(player);
         setTimeout(function () { callAlerts(); }, 20);
-        
     } else {
         alert("Not your turn or your bucket is empty");
     }
 };
-
