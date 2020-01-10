@@ -35,6 +35,11 @@ let drawBackground = () => {
     board.interactive = true;
     board.on("mousedown", (event: interaction.InteractionEvent) => { console.log("we clicked"); });
     app.stage.addChild(board);
+
+    // let board = PIXI.Sprite.from("board.png"); DO NOT UNCOMMENT THIS PLS
+    board.width = window.innerWidth;
+    board.height = window.innerHeight;
+    app.stage.addChild(board);
 };
 
 let drawBuckets = () => {
