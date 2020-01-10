@@ -1,5 +1,5 @@
 import { Application, interaction } from "pixi.js";
-import { model, numStones, onClick, numRows, p1Score, p0Score, winner, player } from "./index-script";
+import { model, onClick, p1Score, p0Score, winner, player } from "./index-script";
 
 const SCALE_X: number = 100;
 const SCALE_Y: number = 100;

@@ -1,8 +1,5 @@
 import { drawBoard, drawPlayerTurn } from "./board-script";
 
-export const numStones: number = 48;
-export const numRows: number = 2;
-export const numCols: number = 6;
 export let model: number[][] = [];
 export let p1Score: number = 0;
 export let p0Score: number = 0;
@@ -15,9 +12,9 @@ export let main = async () => {
 };
 
 export let initModel = (): void => {
-    for (let row = 0; row < numRows; row++) { // run twice, once for each row
+    for (let row = 0; row < 2; row++) { // run twice, once for each row
         model[row] = []; // initialize row
-        for (let col = 0; col < numCols; col++) { // run six times, once for each column
+        for (let col = 0; col < 6; col++) { // run six times, once for each column
             model[row][col] = 4; // initialize index
         }
     }
@@ -54,7 +51,7 @@ export let onClick = (row: number, col: number): boolean => {
                 }
                 stonesInHand--;
 
-            } else if (col === numCols) { 
+            } else if (col === 6) { 
                 // case where player 1's store is reached on player 0's turn
                 row--;
                 direction *= -1; // start moving left on row 0, equiv to direction = 1
@@ -92,7 +89,7 @@ export let onClick = (row: number, col: number): boolean => {
         while (stonesInHand > 0) {
             col += direction;
 
-            if (col === numCols) {
+            if (col === 6) {
                 // At player 1's store, on player 1's turn (deposit)
                 p1Score++;
                 row--;
@@ -152,7 +149,7 @@ export let checkIfGameOver = () => {
 };
 
 export let clearRow = (row: number) => {
-    // helper function to clear out each row
+    // helper function to clear out a row
     for (let col = 0; col < model[row].length; col++) {
         model[row][col] = 0;
     }
@@ -161,7 +158,7 @@ export let clearRow = (row: number) => {
 export let sumRow = (row: number) => {
     // helper function to sum each row
     let count = 0;
-    for (let col = 0; col < numCols; col++) {
+    for (let col = 0; col < 6; col++) {
         count += model[row][col];
     }
     return count;
