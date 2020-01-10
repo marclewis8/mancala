@@ -16,22 +16,24 @@ let assertFunctionDefined = (name: string, input: {}) => {
     expect(input).to.be.an("function");
 };
 
-let assertVariableDefined = (name: string, input: {}) => {
+let assertVariableDefined = (name: string, type: string, input: {}) => {
     if (input === undefined) {
         throw new Error(
             "Expect the variable `" + name +
             "` to be defined. Check spelling and case, and be sure you exported the variable."
         );
     }
-    expect(input).to.be.an("number");
+    expect(input).to.be.a(type);
 };
 
 describe("0. Exports", () => {
 
     it("should have all the necessary exported variables and functions.", () => {
-
-        assertVariableDefined("player", student.player);
-
+        assertVariableDefined("player", "number", student.player);
+        assertVariableDefined("winner", "number", student.winner);
+        assertVariableDefined("p0score", "number", student.p0Score);
+        assertVariableDefined("p1score", "number", student.p1Score);
+        assertVariableDefined("model", "array", student.model);
     });
 
 });
@@ -117,7 +119,7 @@ describe("4. onclick for player 0", () => {
 
         assertFunctionDefined("initModel", student.initModel);
         assertFunctionDefined("onClick", student.onClick);
-        assertVariableDefined("p0Score", student.p0Score);
+        assertVariableDefined("p0Score", "number", student.p0Score);
 
         student.initModel();
         Ref.initModel();
@@ -134,7 +136,7 @@ describe("4. onclick for player 0", () => {
 
         assertFunctionDefined("initModel", student.initModel);
         assertFunctionDefined("onClick", student.onClick);
-        assertVariableDefined("p1score", student.p1Score);
+        assertVariableDefined("p1score", "number", student.p1Score);
 
         let startingState = [
             [10, 1, 1, 1, 1, 1],
@@ -151,7 +153,7 @@ describe("4. onclick for player 0", () => {
     it("should have player 0 go again when the last stone deposited went into player 0's store", () => {
         assertFunctionDefined("initModel", student.initModel);
         assertFunctionDefined("onClick", student.onClick);
-        assertVariableDefined("player", student.player);
+        assertVariableDefined("player", "number", student.player);
 
         student.initModel();
         Ref.initModel();
@@ -164,7 +166,7 @@ describe("4. onclick for player 0", () => {
     it("should steal from player 1 when last stone is dropped in empty bucket", () => {
         assertFunctionDefined("initModel", student.initModel);
         assertFunctionDefined("onClick", student.onClick);
-        assertVariableDefined("player", student.player);
+        assertVariableDefined("player", "number", student.player);
 
         Ref.initModel();
         student.initModel();
@@ -229,7 +231,7 @@ describe("5. onClick for player 1", () => {
         student.onClick(0, 5); // take a turn for player 0 
         student.onClick(1, 3); // create empty bucket on player 1's row
         // student.onClick(); // take another turn for player 0
-         
+
 
         // Any call done to student should be done to Ref since we can't modify scores
         Ref.onClick(0, 5);
@@ -287,7 +289,7 @@ let initStudentModel = () => {
     ]);
 };
 
-module Ref {
+export module Ref {
     export const numStones: number = 48;
     export const numRows: number = 2;
     export const numCols: number = 6;
