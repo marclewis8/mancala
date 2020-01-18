@@ -1,4 +1,4 @@
-import * as student from "./student-script";
+import * as student from "./index-script";
 import { expect, assert } from "chai";
 import { assertFunction, assertUnaryExpression } from "babel-types";
 // import { player } from "./index-script";
