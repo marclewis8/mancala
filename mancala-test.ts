@@ -84,6 +84,7 @@ describe("4. onclick for player 0", () => {
         assertVariableDefined("model", "array", student.model);
         assertFunctionDefined("onClick", student.onClick);
         initStudentModel();
+        assert(student.player === 0, "Incorrect player turn");
         Ref.initModel();
 
         // player 0 clicks on bucket in row 1
@@ -94,6 +95,7 @@ describe("4. onclick for player 0", () => {
     it("should not move stones when player 0 clicks on an empty bucket", () => {
         assertVariableDefined("model", "array", student.model);
         assertFunctionDefined("onClick", student.onClick);
+        assert(student.player === 0, "Incorrect player turn");
 
         initStudentModel();
         Ref.initModel();
@@ -112,11 +114,15 @@ describe("4. onclick for player 0", () => {
         assertFunctionDefined("onClick", student.onClick);
         assertVariableDefined("p0Score", "number", student.p0Score);
         assertVariableDefined("model", "array", student.model);
+        assert(student.player === 0, "Incorrect player turn");
 
         initStudentModel();
         Ref.initModel();
 
         expect(student.onClick(0, 1)).to.equal(Ref.onClick(0, 1)); // should be a successful move
+        student.onClick(1, 4); // take a turn for p1
+        Ref.onClick(1, 4); // take a turn for p1
+
         expect(student.p0Score).to.equal(Ref.p0Score); // should deposit one in p0score
         expect(student.model).to.deep.equal(Ref.model);
     });
@@ -126,6 +132,7 @@ describe("4. onclick for player 0", () => {
         assertFunctionDefined("onClick", student.onClick);
         assertVariableDefined("p1score", "number", student.p1Score);
         assertVariableDefined("model", "array", student.model);
+        assert(student.player === 0, "Incorrect player turn");
 
         let startingState = [
             [10, 1, 1, 1, 1, 1],
@@ -138,11 +145,15 @@ describe("4. onclick for player 0", () => {
         student.onClick(0, 0);
         Ref.onClick(0, 0);
         expect(student.p1Score).to.equal(Ref.p1Score); // score shouldn't change after click
+        expect(student.model).to.deep.equal(Ref.model);
+        student.onClick(1, 0); // take turn for p1
+        Ref.onClick(1, 0); // take turn for p1
     });
 
     it("should have player 0 go again when the last stone deposited went into player 0's store", () => {
         assertFunctionDefined("onClick", student.onClick);
         assertVariableDefined("player", "number", student.player);
+        assert(student.player === 0, "Incorrect player turn");
 
         initStudentModel();
         Ref.initModel();
@@ -156,6 +167,7 @@ describe("4. onclick for player 0", () => {
         assertFunctionDefined("onClick", student.onClick);
         assertVariableDefined("player", "number", student.player);
         assertVariableDefined("model", "array", student.model);
+        assert(student.player === 0, "Incorrect player turn");
 
         Ref.initModel();
         initStudentModel();
@@ -169,12 +181,14 @@ describe("4. onclick for player 0", () => {
         Ref.onClick(0, 5);
         expect(student.p0Score).to.equal(Ref.p0Score);
         expect(student.model).to.deep.equal(Ref.model);
+        student.onClick(1, 1); // Take turn with p1
+        Ref.onClick(1, 1); // Take turn with p1
     });
-
 
     it("should correctly move stones when none of the edge cases are encountered", () => {
         assertFunctionDefined("onClick", student.onClick);
         assertVariableDefined("model", "array", student.model);
+        assert(student.player === 0, "Incorrect player turn");
 
         let startingState = [
             [5, 5, 0, 4, 5, 5],
@@ -187,6 +201,8 @@ describe("4. onclick for player 0", () => {
         student.onClick(0, 5);
         Ref.onClick(0, 5);
         expect(student.model).to.deep.equal(Ref.model);
+        student.onClick(1, 5); // Take a turn with p1
+        Ref.onClick(1, 5); // Take a turn with p1
     });
 
     it("should pass a RIGOROUS stress test of 1000 random clicks", () => {
@@ -209,11 +225,15 @@ describe("4. onclick for player 0", () => {
 
 });
 
-describe("5. onClick for player 1", () => {
-    it("should not move stones when player 1 clicks on a bucket in player 0's row.", () => {
 
+describe("5. onclick for player 1", () => {
+
+    it("should not move stones when player 1 clicks on a bucket in player 0's row", () => {
+        student.onClick(0, 0);
+        Ref.onClick(0, 0);
+        assertVariableDefined("model", "array", student.model);
         assertFunctionDefined("onClick", student.onClick);
-
+        assert(student.player === 1, "Incorrect player turn");
         initStudentModel();
         Ref.initModel();
 
@@ -222,30 +242,137 @@ describe("5. onClick for player 1", () => {
         expect(student.model).to.deep.equal(Ref.model); // should be no internal board change
     });
 
-
-    it("should not move stones when player 1 clicks on an empty bucket", () => {
-        // TODO
-        assertFunctionDefined("initModel", student.initModel);
+    it("should not move stones when player 0 clicks on an empty bucket", () => {
+        assertVariableDefined("model", "array", student.model);
         assertFunctionDefined("onClick", student.onClick);
+        assert(student.player === 1, "Incorrect player turn");
 
-        student.initModel();
+        initStudentModel();
         Ref.initModel();
 
-        student.onClick(0, 5); // take a turn for player 0 
-        student.onClick(1, 3); // create empty bucket on player 1's row
-        // student.onClick(); // take another turn for player 0
+        student.onClick(1, 5); // create empty bucket on player 1's row
+        student.onClick(0, 0); // take a turn for player 0
 
+        Ref.onClick(1, 5);
+        Ref.onClick(0, 0);
 
-        // Any call done to student should be done to Ref since we can't modify scores
-        Ref.onClick(0, 5);
-        Ref.onClick(1, 3);
-
-        let copy = copyArr(student.model);
-        let result = student.onClick(1, 1);
-
-        expect(result).to.equal(false);
-        expect(student.model).to.deep.equal(copy);
+        expect(student.onClick(1, 5)).to.equal(Ref.onClick(1, 5)); // both should be false, no state change
+        expect(student.model).to.deep.equal(Ref.model);
     });
+
+    it("should add a stone to player 1's store when the loop reaches the right edge", () => {
+        assertFunctionDefined("onClick", student.onClick);
+        assertVariableDefined("p0Score", "number", student.p0Score);
+        assertVariableDefined("model", "array", student.model);
+        assert(student.player === 1, "Incorrect player turn");
+
+        initStudentModel();
+        Ref.initModel();
+
+        expect(student.onClick(1, 3)).to.equal(Ref.onClick(1, 3)); // should be a successful move
+        expect(student.p0Score).to.equal(Ref.p0Score); // should deposit one in p0score
+        expect(student.model).to.deep.equal(Ref.model);
+
+        student.onClick(0, 4); // take a turn for p0
+        Ref.onClick(0, 4); // take a turn for p0
+    });
+
+    it("should skip over player 0's store when the loop reaches the left edge", () => {
+
+        assertFunctionDefined("onClick", student.onClick);
+        assertVariableDefined("p1score", "number", student.p1Score);
+        assertVariableDefined("model", "array", student.model);
+        assert(student.player === 1, "Incorrect player turn");
+
+        let startingState = [
+            [1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 10]
+        ];
+
+        setModel(student.model, startingState);
+        setModel(Ref.model, startingState);
+
+        student.onClick(1, 5);
+        Ref.onClick(1, 5);
+        expect(student.p1Score).to.equal(Ref.p1Score); // score shouldn't change after click
+        expect(student.model).to.deep.equal(Ref.model);
+        student.onClick(0, 2); // take turn for p0
+        Ref.onClick(0, 2); // take turn for p0
+    });
+
+    it("should have player 1 go again when the last stone deposited went into player 1's store", () => {
+        assertFunctionDefined("onClick", student.onClick);
+        assertVariableDefined("player", "number", student.player);
+        assert(student.player === 1, "Incorrect player turn");
+
+        initStudentModel();
+        Ref.initModel();
+
+        student.onClick(1, 2);
+        Ref.onClick(1, 2);
+        expect(student.player).to.equal(Ref.player);
+    });
+
+    it("should steal from player 0 when last stone is dropped in empty bucket", () => {
+        assertFunctionDefined("onClick", student.onClick);
+        assertVariableDefined("player", "number", student.player);
+        assertVariableDefined("model", "array", student.model);
+        assert(student.player === 1, "Incorrect player turn");
+
+        Ref.initModel();
+        initStudentModel();
+        let startingState = [
+            [1, 5, 1, 1, 1, 1],
+            [1, 0, 1, 1, 1, 1]
+        ];
+        setModel(student.model, startingState);
+        setModel(Ref.model, startingState);
+        student.onClick(1, 0);
+        Ref.onClick(1, 0);
+        expect(student.p0Score).to.equal(Ref.p0Score);
+        expect(student.model).to.deep.equal(Ref.model);
+        student.onClick(0, 3); // Take turn with p0
+        Ref.onClick(0, 3); // Take turn with p0
+    });
+
+    it("should correctly move stones when none of the edge cases are encountered", () => {
+        assertFunctionDefined("onClick", student.onClick);
+        assertVariableDefined("model", "array", student.model);
+        assert(student.player === 1, "Incorrect player turn");
+
+        let startingState = [
+            [5, 5, 0, 4, 5, 5],
+            [5, 4, 4, 0, 5, 5]
+        ];
+
+        setModel(student.model, startingState);
+        setModel(Ref.model, startingState);
+
+        student.onClick(1, 1);
+        Ref.onClick(1, 1);
+        expect(student.model).to.deep.equal(Ref.model);
+        student.onClick(0, 4); // Take a turn with p1
+        Ref.onClick(0, 4); // Take a turn with p1
+    });
+
+    it("should pass a RIGOROUS stress test of 1000 random clicks", () => {
+        student.initModel();
+        Ref.initModel();
+        let startingState = [
+            [10000, 10000, 10000, 10000, 10000, 10000],
+            [10000, 10000, 10000, 10000, 10000, 10000]
+        ];
+        setModel(student.model, startingState);
+        setModel(Ref.model, startingState);
+        for (let i = 0; i < 1000; i++) {
+            let row = Math.floor(Math.random() * 2);
+            let col = Math.floor(Math.random() * 6);
+            Ref.onClick(row, col);
+            student.onClick(row, col);
+        }
+        expect(student.model).to.deep.equal(Ref.model);
+    });
+
 });
 
 describe("0. copyArr", () => {
