@@ -12,6 +12,7 @@ export let main = async () => {
 };
 
 export let initModel = (): void => {
+
     for (let row = 0; row < 2; row++) { // run twice, once for each row
         model[row] = []; // initialize row
         for (let col = 0; col < 6; col++) { // run six times, once for each column
@@ -163,17 +164,5 @@ export let sumRow = (row: number) => {
     }
     return count;
 };
-
-// export let handleGameOver = (sum0: number, sum1: number) => {
-//     p0Score += sum0;
-//     p1Score += sum1;
-//     if (p1Score > p0Score) {
-//         winner = 1;
-//     } else if (p0Score > p1Score) {
-//         winner = 0;
-//     } else {
-//         winner = -1;
-//     }
-// }; dead code, remove this
 
 main();
