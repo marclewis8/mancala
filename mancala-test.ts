@@ -83,8 +83,8 @@ describe("4. onclick for player 0", () => {
     it("should not move stones when player 0 clicks on a bucket in player 1's row", () => {
         assertVariableDefined("model", "array", student.model);
         assertFunctionDefined("onClick", student.onClick);
-        initStudentModel();
         assert(student.player === 0, "Incorrect player turn");
+        initStudentModel();
         Ref.initModel();
 
         // player 0 clicks on bucket in row 1
@@ -205,7 +205,10 @@ describe("4. onclick for player 0", () => {
         Ref.onClick(1, 5); // Take a turn with p1
     });
 
-    it("should pass a RIGOROUS stress test of 1000 random clicks", () => {
+    it("should pass a RIGOROUS stress test of 100 random clicks", () => {
+        assertVariableDefined("model", "array", student.model);
+        assertFunctionDefined("onClick", student.onClick);
+        assertFunctionDefined("initModel", student.initModel);
         student.initModel();
         Ref.initModel();
         let startingState = [
@@ -214,13 +217,12 @@ describe("4. onclick for player 0", () => {
         ];
         setModel(student.model, startingState);
         setModel(Ref.model, startingState);
-        for (let i = 0; i < 1000; i++) {
+        for (let i = 0; i < 100; i++) {
             let row = Math.floor(Math.random() * 2);
             let col = Math.floor(Math.random() * 6);
-            Ref.onClick(row, col);
-            student.onClick(row, col);
+            expect(student.model).to.deep.equal(Ref.model);
         }
-        expect(student.model).to.deep.equal(Ref.model);
+        
     });
 
 });
@@ -229,10 +231,10 @@ describe("4. onclick for player 0", () => {
 describe("5. onclick for player 1", () => {
 
     it("should not move stones when player 1 clicks on a bucket in player 0's row", () => {
-        student.onClick(0, 0);
-        Ref.onClick(0, 0);
         assertVariableDefined("model", "array", student.model);
         assertFunctionDefined("onClick", student.onClick);
+        student.onClick(0, 0);
+        Ref.onClick(0, 0);
         assert(student.player === 1, "Incorrect player turn");
         initStudentModel();
         Ref.initModel();
@@ -242,9 +244,10 @@ describe("5. onclick for player 1", () => {
         expect(student.model).to.deep.equal(Ref.model); // should be no internal board change
     });
 
-    it("should not move stones when player 0 clicks on an empty bucket", () => {
+    it("should not move stones when player 1 clicks on an empty bucket", () => {
         assertVariableDefined("model", "array", student.model);
         assertFunctionDefined("onClick", student.onClick);
+        assertFunctionDefined("initModel", student.initModel);
         assert(student.player === 1, "Incorrect player turn");
 
         initStudentModel();
@@ -262,15 +265,16 @@ describe("5. onclick for player 1", () => {
 
     it("should add a stone to player 1's store when the loop reaches the right edge", () => {
         assertFunctionDefined("onClick", student.onClick);
-        assertVariableDefined("p0Score", "number", student.p0Score);
+        assertVariableDefined("p1Score", "number", student.p1Score);
         assertVariableDefined("model", "array", student.model);
+        assertFunctionDefined("initModel", student.initModel);
         assert(student.player === 1, "Incorrect player turn");
 
         initStudentModel();
         Ref.initModel();
 
         expect(student.onClick(1, 3)).to.equal(Ref.onClick(1, 3)); // should be a successful move
-        expect(student.p0Score).to.equal(Ref.p0Score); // should deposit one in p0score
+        expect(student.p1Score).to.equal(Ref.p1Score); // should deposit one in p1score
         expect(student.model).to.deep.equal(Ref.model);
 
         student.onClick(0, 4); // take a turn for p0
@@ -303,6 +307,7 @@ describe("5. onclick for player 1", () => {
     it("should have player 1 go again when the last stone deposited went into player 1's store", () => {
         assertFunctionDefined("onClick", student.onClick);
         assertVariableDefined("player", "number", student.player);
+        assertFunctionDefined("initModel", student.initModel);
         assert(student.player === 1, "Incorrect player turn");
 
         initStudentModel();
@@ -317,6 +322,7 @@ describe("5. onclick for player 1", () => {
         assertFunctionDefined("onClick", student.onClick);
         assertVariableDefined("player", "number", student.player);
         assertVariableDefined("model", "array", student.model);
+        assertFunctionDefined("initModel", student.initModel);
         assert(student.player === 1, "Incorrect player turn");
 
         Ref.initModel();
@@ -329,7 +335,7 @@ describe("5. onclick for player 1", () => {
         setModel(Ref.model, startingState);
         student.onClick(1, 0);
         Ref.onClick(1, 0);
-        expect(student.p0Score).to.equal(Ref.p0Score);
+        expect(student.p1Score).to.equal(Ref.p1Score);
         expect(student.model).to.deep.equal(Ref.model);
         student.onClick(0, 3); // Take turn with p0
         Ref.onClick(0, 3); // Take turn with p0
@@ -355,7 +361,7 @@ describe("5. onclick for player 1", () => {
         Ref.onClick(0, 4); // Take a turn with p1
     });
 
-    it("should pass a RIGOROUS stress test of 1000 random clicks", () => {
+    it("should pass a RIGOROUS stress test of 100 random clicks", () => {
         student.initModel();
         Ref.initModel();
         let startingState = [
@@ -364,16 +370,37 @@ describe("5. onclick for player 1", () => {
         ];
         setModel(student.model, startingState);
         setModel(Ref.model, startingState);
-        for (let i = 0; i < 1000; i++) {
+        for (let i = 0; i < 100; i++) {
             let row = Math.floor(Math.random() * 2);
             let col = Math.floor(Math.random() * 6);
             Ref.onClick(row, col);
             student.onClick(row, col);
+            expect(student.model).to.deep.equal(Ref.model);
         }
-        expect(student.model).to.deep.equal(Ref.model);
     });
 
 });
+
+// describe("6. checkIfGameOver", () => {
+
+//     if (student.player === 0) {
+
+//     it("should add the sum of row 0 to player 0's store when player 1's side becomes empty.", () => {
+//         let state = [[1, 0, 1, 1, 1, 1],
+//                      [1, 0, 0, 0, 0, 0]];
+        
+        
+//     });
+//     it("should add the sum of row 1 to player 1's store when player 0's side becomes empty.", () => {
+//         let state = [[0, 0, 1, 0, 0, 0],
+//         [1, 0, 1, 1, 1, 1]];
+//         setModel(student.model, state);
+//         setModel(Ref.model, state);
+
+
+//     });
+//     }   
+// });
 
 describe("0. copyArr", () => {
     it("Simple copy", () => {
