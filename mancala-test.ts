@@ -222,7 +222,7 @@ describe("4. onclick for player 0", () => {
             let col = Math.floor(Math.random() * 6);
             expect(student.model).to.deep.equal(Ref.model);
         }
-        
+
     });
 
 });
@@ -378,66 +378,66 @@ describe("5. onclick for player 1", () => {
             expect(student.model).to.deep.equal(Ref.model);
         }
     });
-
 });
 
-// describe("6. checkIfGameOver", () => {
-
-//     if (student.player === 0) {
-
-//     it("should add the sum of row 0 to player 0's store when player 1's side becomes empty.", () => {
-//         let state = [[1, 0, 1, 1, 1, 1],
-//                      [1, 0, 0, 0, 0, 0]];
-        
-        
-//     });
-//     it("should add the sum of row 1 to player 1's store when player 0's side becomes empty.", () => {
-//         let state = [[0, 0, 1, 0, 0, 0],
-//         [1, 0, 1, 1, 1, 1]];
-//         setModel(student.model, state);
-//         setModel(Ref.model, state);
-
-
-//     });
-//     }   
-// });
-
-describe("0. copyArr", () => {
-    it("Simple copy", () => {
-        let og = [
-            [1, 2, 3],
-            [4, 5, 6],
-            [7, 8, 9]
+describe("6. checkIfGameOver", () => {
+    it("should correctly determine when there is no winner", () => {
+        assertFunctionDefined("checkIfGameOver", student.checkIfGameOver);
+        assertVariableDefined("winner", "number", student.winner);
+        let startingState = [
+            [7, 19, 9, 8, 4, 3],
+            [32, 3, 76, 23, 9, 2]
         ];
-        let copy = copyArr(og);
-        expect(copy).to.deep.equal(og);
+        setModel(student.model, startingState);
+        setModel(Ref.model, startingState);
+        student.checkIfGameOver();
+        Ref.checkIfGameOver();
+        expect(Number.isNaN(student.winner)).to.equal(Number.isNaN(Ref.winner));
     });
-
-    it("should also work after model has been changed", () => {
-        Ref.initModel();
-        let copy = copyArr(Ref.model);
-        Ref.clearRow(0);
-        expect(Ref.model).deep.equal([
+    it("should correctly determine when player 0 wins", () => {
+        assertFunctionDefined("checkIfGameOver", student.checkIfGameOver);
+        assertVariableDefined("winner", "number", student.winner);
+        let startingState = [
+            [0, 0, Number.POSITIVE_INFINITY, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0]
+        ];
+        setModel(student.model, startingState);
+        setModel(Ref.model, startingState);
+        student.checkIfGameOver();
+        Ref.checkIfGameOver();
+        expect(student.winner).to.equal(Ref.winner);
+    });
+    it("should correctly determine when player 1 wins", () => {
+        assertFunctionDefined("checkIfGameOver", student.checkIfGameOver);
+        assertVariableDefined("winner", "number", student.winner);
+        let startingState = [
+            [0, 0, Number.NEGATIVE_INFINITY, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0]
+        ];
+        setModel(student.model, startingState);
+        setModel(Ref.model, startingState);
+        student.checkIfGameOver();
+        Ref.checkIfGameOver();
+        startingState = [
             [0, 0, 0, 0, 0, 0],
-            [4, 4, 4, 4, 4, 4]
-        ]);
-        expect(copy).deep.equal([[4, 4, 4, 4, 4, 4], [4, 4, 4, 4, 4, 4]]);
-        Ref.model = copy;
-        for (let i = 0; i < Ref.model.length; ++i) {
-            expect(Ref.model[i]).eql(copy[i]);
-        }
-        expect(Ref.model).deep.equal(copy);
+            [0, 0, 0, 0, 0, Number.POSITIVE_INFINITY]
+        ];
+        setModel(student.model, startingState);
+        setModel(Ref.model, startingState);
+        expect(student.winner).to.equal(Ref.winner);
+    });
+    it("should correctly determine when there is a tie", () => {
+        assertFunctionDefined("checkIfGameOver", student.checkIfGameOver);
+        assertVariableDefined("winner", "number", student.winner);
+        let startingState = [
+            [0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0]
+        ];
+        setModel(student.model, startingState);
+        setModel(Ref.model, startingState);
+        expect(student.winner).to.equal(Ref.winner);
     });
 });
-
-
-let copyArr = <T>(input: T[][]): T[][] => {
-    let output: T[][] = [];
-    for (let i = 0; i < input.length; i++) {
-        output[i] = input[i].slice();
-    }
-    return output;
-};
 
 let initStudentModel = () => {
     setModel(student.model, [
