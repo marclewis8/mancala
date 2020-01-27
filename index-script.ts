@@ -8,7 +8,7 @@ export let player: number = 0;
 
 export let main = async () => {
     initModel();
-    // drawBoard(); // commented out to work with tests
+    drawBoard(); // commented out to work with tests
 };
 
 export let initModel = (): void => {

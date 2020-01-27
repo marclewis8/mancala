@@ -19,6 +19,7 @@ let p0store = new PIXI.Graphics();
 // TODO: Change image for stones
 // Make buckets and stores a little bigger/ make sure we're happy with alignment
 // Reposition player scores
+// TODO Remove ALPHA/TRANSPARENCY FROM BUCKETS/STORES TO MOVE THEM AROUND
 
 export let drawBoard = (): void => {
     document.body.appendChild(app.view);
@@ -41,7 +42,7 @@ let drawBuckets = () => {
         buckets[row] = [];
         for (let col = 1; col < 7; col++) {
             let bucket = new PIXI.Graphics();
-            bucket.beginFill(row === 0 ? 0xffff00 : 0x00ff00);
+            bucket.beginFill(row === 0 ? 0xffff00 : 0x00ff00, 0);
             bucket.drawCircle(col * SCALE_X + BUCKET_X_OFFSET, getRowY(row), CIRCLE_RADIUS);
             bucket.endFill();
             bucket.interactive = true;
@@ -58,11 +59,11 @@ let initStores = () => {
     let storeWidth = CIRCLE_RADIUS * 2;
     let storeHeight = getRowY(1) - getRowY(0) + storeWidth;
     console.log(window.innerWidth);
-    p0store.beginFill(0xffff00);
+    p0store.beginFill(0xffff00, 0);
     p0store.drawRoundedRect(STORE_X_OFFSET - CIRCLE_RADIUS * 2, getRowY(0) - CIRCLE_RADIUS, storeWidth, storeHeight, 30);
     p0store.endFill();
 
-    p1store.beginFill(0x00ff00);
+    p1store.beginFill(0x00ff00, 0);
     p1store.drawRoundedRect(window.innerWidth - STORE_X_OFFSET, getRowY(0) - CIRCLE_RADIUS, storeWidth, storeHeight, 30);
     p1store.endFill();
 
@@ -75,8 +76,8 @@ let drawStores = () => {
     p1store.removeChildren();
     for (let numStones = 0; numStones < p1Score; numStones++) {
         let bounds = p1store.getBounds();
-        let stone = PIXI.Sprite.from("rameses.png");
-        stone.scale = new PIXI.Point(.05, .05);
+        let stone = PIXI.Sprite.from("stones2.png");
+        stone.scale = new PIXI.Point(.4, .4);
         stone.anchor.set(.5);
         stone.x = getRandomInt(bounds.left + 20, bounds.right - 20);
         stone.y = getRandomInt(bounds.top + 20, bounds.bottom - 20);
@@ -92,8 +93,8 @@ let drawStores = () => {
     p0store.removeChildren();
     for (let numStones = 0; numStones < p0Score; numStones++) {
         let bounds = p0store.getBounds();
-        let stone = PIXI.Sprite.from("rameses.png");
-        stone.scale = new PIXI.Point(.05, .05);
+        let stone = PIXI.Sprite.from("stones2.png");
+        stone.scale = new PIXI.Point(.4, .4);
         stone.anchor.set(.5);
         stone.x = getRandomInt(bounds.left + 20, bounds.right - 20);
         stone.y = getRandomInt(bounds.top + 20, bounds.bottom - 20);
@@ -117,8 +118,8 @@ let drawStones = (): void => {
 
             for (let numStones = 0; numStones < model[row][col]; numStones++) {
                 let bounds = bucket.getBounds();
-                let stone = PIXI.Sprite.from("rameses.png");
-                stone.scale = new PIXI.Point(.05, .05);
+                let stone = PIXI.Sprite.from("stones2.png");
+                stone.scale = new PIXI.Point(.4, .4);
                 stone.anchor.set(.5);
                 stone.x = getRandomInt(bounds.left + 20, bounds.right - 20);
                 stone.y = getRandomInt(bounds.top + 20, bounds.bottom - 20);
