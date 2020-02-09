@@ -29,6 +29,7 @@ export let drawBoard = (): void => {
     drawStones();
     app.stage.addChild(playerTurnText);
 };
+window["drawBoard"] = drawBoard;
 
 let drawBackground = () => {
     let board = PIXI.Sprite.from("board.png");

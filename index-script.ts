@@ -1,4 +1,4 @@
-import { drawBoard, drawPlayerTurn } from "./board-script";
+declare let drawBoard: () => void;
 
 export let model: number[][] = [];
 export let p1Score: number = 0;
