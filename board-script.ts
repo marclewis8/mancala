@@ -16,7 +16,12 @@ let p1Store = new PIXI.Graphics();
 let p0ScoreText = new PIXI.Text();
 let p1ScoreText = new PIXI.Text();
 const app: Application = new Application(
-    { width: window.innerWidth * (63 / 64), height: window.innerHeight * (251 / 261), backgroundColor: 0xFFFFFF });
+    {
+        width: window.innerWidth * (63 / 64),
+        height: window.innerHeight * (251 / 261),
+        backgroundColor: 0xFFFFFF
+    });
+
 export let drawBoard = (): void => {
     document.body.appendChild(app.view);
     drawBackground();
@@ -29,14 +34,14 @@ export let drawBoard = (): void => {
 };
 window["drawBoard"] = drawBoard;
 
-let drawBackground = () => {
+let drawBackground = (): void => {
     let board = PIXI.Sprite.from("board.png");
     board.width = window.innerWidth;
     board.height = window.innerHeight;
     app.stage.addChild(board);
 };
 
-let drawBuckets = () => {
+let drawBuckets = (): void => {
     for (let row = 0; row < 2; row++) {
         buckets[row] = [];
         for (let col = 1; col < 7; col++) {
@@ -54,7 +59,7 @@ let drawBuckets = () => {
 };
 
 
-let initStores = () => {
+let initStores = (): void => {
     let storeWidth = BUCKET_RADIUS * 2;
     let storeHeight = getRowY(1) - getRowY(0) + storeWidth;
     p0Store.beginFill(0xffff00, 0);
@@ -69,7 +74,7 @@ let initStores = () => {
     app.stage.addChild(p1Store);
 };
 
-let initScoreText = () => {
+let initScoreText = (): void => {
     p0ScoreText.text = "" + p0Score;
     p0ScoreText.style.fill = 0xFFFFFF;
     p0ScoreText.position.x = STORE_X_OFFSET - BUCKET_RADIUS - p0ScoreText.width / 2;
@@ -82,19 +87,19 @@ let initScoreText = () => {
     p1Store.addChild(p1ScoreText);
 };
 
-let initPlayerText = () => {
+let initPlayerText = (): void => {
     playerTurnText.style.fill = 0xFFFFFF;
     playerTurnText.position.x = window.innerWidth / 2 - playerTurnText.width / 2;
     playerTurnText.position.y = window.innerHeight / 14.4;
 
 };
 
-let drawStores = () => {
+let drawStores = (): void => {
     fillStoresWithStones(0);
     fillStoresWithStones(1);
 };
 
-let fillStoresWithStones = (player: number) => {
+let fillStoresWithStones = (player: number): void => {
     let isPlayer0 = player === 0;
     let store = isPlayer0 ? p0Store : p1Store;
     let score = isPlayer0 ? p0Score : p1Score;
@@ -124,7 +129,6 @@ let fillStoresWithStones = (player: number) => {
 };
 
 let drawStones = (): void => {
-    // Draw from the model
     for (let row = 0; row < model.length; row++) {
         for (let col = 0; col < model[row].length; col++) {
             let bucket = buckets[row][col];
@@ -151,8 +155,8 @@ let drawStones = (): void => {
     }
 };
 
-export let drawPlayerTurn = (p: number) => {
-    playerTurnText.text = `Player ${p}`;
+export let drawPlayerTurn = (p: number): void => {
+    playerTurnText.text = "Player " + p;
 };
 
 let isInBounds = (x: number, y: number, rect: PIXI.Rectangle): boolean => {
@@ -175,7 +179,7 @@ export let getIndexFromClick = (event: interaction.InteractionEvent): string => 
     return "No bounds found";
 };
 
-let callAlerts = () => {
+let callAlerts = (): void => {
     if (winner === -1) {
         alert("Tie Game!");
     } else if (winner >= 0) {
@@ -185,7 +189,7 @@ let callAlerts = () => {
     }
 };
 
-let ourOnClick = (event: interaction.InteractionEvent) => {
+let ourOnClick = (event: interaction.InteractionEvent): void => {
     let stringCoords = getIndexFromClick(event);
     let coords = stringCoords.split(",");
     let [row, col] = coords.map(x => parseInt(x, 10));
@@ -200,8 +204,8 @@ let ourOnClick = (event: interaction.InteractionEvent) => {
     }
 };
 
-let getRowY = (row: number) => row === 0 ? ROW_0_Y : ROW_1_Y;
-let getNumStonesLabelY = (row: number) => {
+let getRowY = (row: number): number => row === 0 ? ROW_0_Y : ROW_1_Y;
+let getNumStonesLabelY = (row: number): number => {
     let offset = window.innerHeight / 8;
     return row === 0 ? ROW_0_Y - offset : ROW_1_Y + offset / 1.6;
 };
