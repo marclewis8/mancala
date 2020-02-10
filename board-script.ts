@@ -2,30 +2,33 @@ import { Application, interaction } from "pixi.js";
 import { model, onClick, p1Score, p0Score, winner, player } from "./index-script";
 
 const SCALE_X: number = window.innerWidth / 13.3;
-const OFFSET: number = 60;
 const BUCKET_X_OFFSET = window.innerWidth / 4.25;
 const ROW_0_Y = window.innerHeight / 3.2;
 const ROW_1_Y = window.innerHeight / 1.28;
-const CIRCLE_RADIUS: number = window.innerWidth / 45;
+const BUCKET_RADIUS: number = window.innerWidth / 45;
+const STONE_RADIUS: number = PIXI.Sprite.from("stones2.png").width / 2;
 const STORE_X_OFFSET = window.innerWidth / 4;
-const NUM_BUCKETS: number = 12;
 let currentPlayer: number = 0;
 let buckets: PIXI.Graphics[][] = [];
 let playerTurnText: PIXI.Text = new PIXI.Text(`Player ${currentPlayer}`);
-const app: Application = new Application({ width: window.innerWidth - 20, height: window.innerHeight - 20, backgroundColor: 0xFFFFFF });
+let p0Store = new PIXI.Graphics();
+let p1Store = new PIXI.Graphics();
+let p0ScoreText = new PIXI.Text();
+let p1ScoreText = new PIXI.Text();
+const app: Application = new Application(
+    { width: window.innerWidth * (63 / 64), height: window.innerHeight * (251 / 261), backgroundColor: 0xFFFFFF });
 
-let p1store = new PIXI.Graphics();
-let p0store = new PIXI.Graphics();
-// TODO: Change image for stones
-// Make buckets and stores a little bigger/ make sure we're happy with alignment
+console.log(window.innerHeight);
+
 // Reposition player scores
-// TODO Remove ALPHA/TRANSPARENCY FROM BUCKETS/STORES TO MOVE THEM AROUND
 
 export let drawBoard = (): void => {
     document.body.appendChild(app.view);
     drawBackground();
     drawBuckets();
     initStores();
+    initScoreText();
+    initPlayerText();
     drawStones();
     app.stage.addChild(playerTurnText);
 };
@@ -44,7 +47,7 @@ let drawBuckets = () => {
         for (let col = 1; col < 7; col++) {
             let bucket = new PIXI.Graphics();
             bucket.beginFill(row === 0 ? 0xffff00 : 0x00ff00, 0);
-            bucket.drawCircle(col * SCALE_X + BUCKET_X_OFFSET, getRowY(row), CIRCLE_RADIUS);
+            bucket.drawCircle(col * SCALE_X + BUCKET_X_OFFSET, getRowY(row), BUCKET_RADIUS);
             bucket.endFill();
             bucket.interactive = true;
             bucket.name = row + ", " + (col - 1);
@@ -57,56 +60,68 @@ let drawBuckets = () => {
 
 
 let initStores = () => {
-    let storeWidth = CIRCLE_RADIUS * 2;
+    let storeWidth = BUCKET_RADIUS * 2;
     let storeHeight = getRowY(1) - getRowY(0) + storeWidth;
-    console.log(window.innerWidth);
-    p0store.beginFill(0xffff00, 0);
-    p0store.drawRoundedRect(STORE_X_OFFSET - CIRCLE_RADIUS * 2, getRowY(0) - CIRCLE_RADIUS, storeWidth, storeHeight, 30);
-    p0store.endFill();
+    p0Store.beginFill(0xffff00, 0);
+    p0Store.drawRoundedRect(STORE_X_OFFSET - BUCKET_RADIUS * 2, getRowY(0) - BUCKET_RADIUS, storeWidth, storeHeight, 30);
+    p0Store.endFill();
 
-    p1store.beginFill(0x00ff00, 0);
-    p1store.drawRoundedRect(window.innerWidth - STORE_X_OFFSET, getRowY(0) - CIRCLE_RADIUS, storeWidth, storeHeight, 30);
-    p1store.endFill();
+    p1Store.beginFill(0x00ff00, 0);
+    p1Store.drawRoundedRect(window.innerWidth - STORE_X_OFFSET, getRowY(0) - BUCKET_RADIUS, storeWidth, storeHeight, 30);
+    p1Store.endFill();
 
-    app.stage.addChild(p0store);
-    app.stage.addChild(p1store);
+    app.stage.addChild(p0Store);
+    app.stage.addChild(p1Store);
+};
+
+let initScoreText = () => {
+    p0ScoreText.text = "" + p0Score;
+    p0ScoreText.style.fill = 0xFFFFFF;
+    p0ScoreText.position.x = STORE_X_OFFSET - BUCKET_RADIUS - p0ScoreText.width / 2;
+    p0ScoreText.position.y = getRowY(0) - 3 * BUCKET_RADIUS;
+    p1ScoreText.text = "" + p1Score;
+    p1ScoreText.position.x = window.innerWidth - STORE_X_OFFSET + BUCKET_RADIUS + 3 - p1ScoreText.width / 2;
+    p1ScoreText.style.fill = 0xFFFFFF;
+    p1ScoreText.position.y = getRowY(0) - 3 * BUCKET_RADIUS;
+    p0Store.addChild(p0ScoreText);
+    p1Store.addChild(p1ScoreText);
+};
+
+let initPlayerText = () => {
+    playerTurnText.style.fill = 0xFFFFFF;
+    playerTurnText.position.x = window.innerWidth / 2 - playerTurnText.width / 2;
+    playerTurnText.position.y = window.innerHeight / 14.4;
+
 };
 
 let drawStores = () => {
-
-    p1store.removeChildren();
-    for (let numStones = 0; numStones < p1Score; numStones++) {
-        let bounds = p1store.getBounds();
-        let stone = PIXI.Sprite.from("stones2.png");
-        stone.scale = new PIXI.Point(.4, .4);
-        stone.anchor.set(.5);
-        stone.x = getRandomInt(bounds.left + 20, bounds.right - 20);
-        stone.y = getRandomInt(bounds.top + 20, bounds.bottom - 20);
-        p1store.addChild(stone);
-    }
-
-    let p1amountOfStones: PIXI.Text = new PIXI.Text("" + p1Score);
-    p1store.addChild(p1amountOfStones);
-    p1amountOfStones.position.x = STORE_X_OFFSET;
-    p1amountOfStones.position.y = OFFSET - CIRCLE_RADIUS + 150;
-
-
-    p0store.removeChildren();
-    for (let numStones = 0; numStones < p0Score; numStones++) {
-        let bounds = p0store.getBounds();
-        let stone = PIXI.Sprite.from("stones2.png");
-        stone.scale = new PIXI.Point(.4, .4);
-        stone.anchor.set(.5);
-        stone.x = getRandomInt(bounds.left + 20, bounds.right - 20);
-        stone.y = getRandomInt(bounds.top + 20, bounds.bottom - 20);
-        p0store.addChild(stone);
-    }
-    let p2amountOfStones: PIXI.Text = new PIXI.Text("" + p0Score);
-    p0store.addChild(p2amountOfStones);
-    p2amountOfStones.position.x = OFFSET;
-    p2amountOfStones.position.y = OFFSET - CIRCLE_RADIUS + 150;
+    fillStoresWithStones(0);
+    fillStoresWithStones(1);
 };
 
+let fillStoresWithStones = (player: number) => {
+    let isPlayer0 = player === 0;
+    let store = isPlayer0 ? p0Store : p1Store;
+    let score = isPlayer0 ? p0Score : p1Score;
+    let scoreText = isPlayer0 ? p0ScoreText : p1ScoreText;
+    store.removeChildren();
+    for (let numStones = 0; numStones < score; numStones++) {
+        let bounds = store.getBounds();
+        let stone = PIXI.Sprite.from("stones2.png");
+        stone.scale = new PIXI.Point(.4, .4);
+        stone.anchor.set(.5);
+        stone.x = getRandomInt(bounds.left + STONE_RADIUS, bounds.right - STONE_RADIUS);
+        stone.y = getRandomInt(bounds.top + STONE_RADIUS, bounds.bottom - STONE_RADIUS);
+        store.addChild(stone);
+    }
+    if (isPlayer0) {
+        scoreText.position.x = STORE_X_OFFSET - BUCKET_RADIUS - scoreText.width / 2;
+    } else {
+        scoreText.position.x = window.innerWidth - STORE_X_OFFSET + BUCKET_RADIUS + 3 - scoreText.width / 2;
+    }
+    scoreText.text = "" + score;
+    store.addChild(scoreText);
+};
 
 let drawStones = (): void => {
     // Draw from the model
@@ -114,22 +129,21 @@ let drawStones = (): void => {
         for (let col = 0; col < model[row].length; col++) {
             // Delete this later if we want
             let bucket = buckets[row][col];
+            bucket.interactiveChildren = false;
             bucket.removeChildren();
-
-
             for (let numStones = 0; numStones < model[row][col]; numStones++) {
                 let bounds = bucket.getBounds();
                 let stone = PIXI.Sprite.from("stones2.png");
                 stone.scale = new PIXI.Point(.4, .4);
                 stone.anchor.set(.5);
-                stone.x = getRandomInt(bounds.left + 20, bounds.right - 20);
-                stone.y = getRandomInt(bounds.top + 20, bounds.bottom - 20);
+                stone.x = getRandomInt(bounds.left + STONE_RADIUS, bounds.right - STONE_RADIUS);
+                stone.y = getRandomInt(bounds.top + STONE_RADIUS, bounds.bottom - STONE_RADIUS);
                 bucket.addChild(stone);
             }
             let amountOfStones = new PIXI.Text("" + model[row][col]);
             amountOfStones.style.fill = 0xFFFFFF;
             bucket.addChild(amountOfStones);
-            amountOfStones.position.x = (col + 1) * SCALE_X + BUCKET_X_OFFSET;
+            amountOfStones.position.x = (col + 1) * SCALE_X + BUCKET_X_OFFSET - amountOfStones.width / 2;
             amountOfStones.position.y = getNumStonesLabelY(row);
         }
     }
