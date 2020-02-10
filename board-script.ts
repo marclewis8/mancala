@@ -6,7 +6,7 @@ const BUCKET_X_OFFSET = window.innerWidth / 4.25;
 const ROW_0_Y = window.innerHeight / 3.2;
 const ROW_1_Y = window.innerHeight / 1.28;
 const BUCKET_RADIUS: number = window.innerWidth / 45;
-const STONE_RADIUS: number = PIXI.Sprite.from("stones2.png").width / 2;
+const STONE_RADIUS: number = PIXI.Sprite.from("stone.png").width / 2;
 const STORE_X_OFFSET = window.innerWidth / 4;
 let currentPlayer: number = 0;
 let buckets: PIXI.Graphics[][] = [];
@@ -46,7 +46,7 @@ let drawBuckets = () => {
         buckets[row] = [];
         for (let col = 1; col < 7; col++) {
             let bucket = new PIXI.Graphics();
-            bucket.beginFill(row === 0 ? 0xffff00 : 0x00ff00, 0);
+            bucket.beginFill(row === 0 ? 0xffff00 : 0x00ff00, 1);
             bucket.drawCircle(col * SCALE_X + BUCKET_X_OFFSET, getRowY(row), BUCKET_RADIUS);
             bucket.endFill();
             bucket.interactive = true;
@@ -62,11 +62,11 @@ let drawBuckets = () => {
 let initStores = () => {
     let storeWidth = BUCKET_RADIUS * 2;
     let storeHeight = getRowY(1) - getRowY(0) + storeWidth;
-    p0Store.beginFill(0xffff00, 0);
+    p0Store.beginFill(0xffff00, 1);
     p0Store.drawRoundedRect(STORE_X_OFFSET - BUCKET_RADIUS * 2, getRowY(0) - BUCKET_RADIUS, storeWidth, storeHeight, 30);
     p0Store.endFill();
 
-    p1Store.beginFill(0x00ff00, 0);
+    p1Store.beginFill(0x00ff00, 1);
     p1Store.drawRoundedRect(window.innerWidth - STORE_X_OFFSET, getRowY(0) - BUCKET_RADIUS, storeWidth, storeHeight, 30);
     p1Store.endFill();
 
@@ -107,7 +107,7 @@ let fillStoresWithStones = (player: number) => {
     store.removeChildren();
     for (let numStones = 0; numStones < score; numStones++) {
         let bounds = store.getBounds();
-        let stone = PIXI.Sprite.from("stones2.png");
+        let stone = PIXI.Sprite.from("stone.png");
         stone.scale = new PIXI.Point(.4, .4);
         stone.anchor.set(.5);
         stone.x = getRandomInt(bounds.left + STONE_RADIUS, bounds.right - STONE_RADIUS);
@@ -133,7 +133,7 @@ let drawStones = (): void => {
             bucket.removeChildren();
             for (let numStones = 0; numStones < model[row][col]; numStones++) {
                 let bounds = bucket.getBounds();
-                let stone = PIXI.Sprite.from("stones2.png");
+                let stone = PIXI.Sprite.from("stone.png");
                 stone.scale = new PIXI.Point(.4, .4);
                 stone.anchor.set(.5);
                 stone.x = getRandomInt(bounds.left + STONE_RADIUS, bounds.right - STONE_RADIUS);
