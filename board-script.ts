@@ -6,7 +6,7 @@ const BUCKET_X_OFFSET = window.innerWidth / 4.25;
 const ROW_0_Y = window.innerHeight / 3.2;
 const ROW_1_Y = window.innerHeight / 1.28;
 const BUCKET_RADIUS: number = window.innerWidth / 45;
-const STONE_RADIUS: number = PIXI.Sprite.from("stone.png").width / 2;
+const STONE_RADIUS: number = PIXI.Sprite.from("stone.png").width * .2;
 const STORE_X_OFFSET = window.innerWidth / 4;
 let currentPlayer: number = 0;
 let buckets: PIXI.Graphics[][] = [];
@@ -17,11 +17,6 @@ let p0ScoreText = new PIXI.Text();
 let p1ScoreText = new PIXI.Text();
 const app: Application = new Application(
     { width: window.innerWidth * (63 / 64), height: window.innerHeight * (251 / 261), backgroundColor: 0xFFFFFF });
-
-console.log(window.innerHeight);
-
-// Reposition player scores
-
 export let drawBoard = (): void => {
     document.body.appendChild(app.view);
     drawBackground();
@@ -46,7 +41,7 @@ let drawBuckets = () => {
         buckets[row] = [];
         for (let col = 1; col < 7; col++) {
             let bucket = new PIXI.Graphics();
-            bucket.beginFill(row === 0 ? 0xffff00 : 0x00ff00, 1);
+            bucket.beginFill(row === 0 ? 0xffff00 : 0x00ff00, 0);
             bucket.drawCircle(col * SCALE_X + BUCKET_X_OFFSET, getRowY(row), BUCKET_RADIUS);
             bucket.endFill();
             bucket.interactive = true;
@@ -62,11 +57,11 @@ let drawBuckets = () => {
 let initStores = () => {
     let storeWidth = BUCKET_RADIUS * 2;
     let storeHeight = getRowY(1) - getRowY(0) + storeWidth;
-    p0Store.beginFill(0xffff00, 1);
+    p0Store.beginFill(0xffff00, 0);
     p0Store.drawRoundedRect(STORE_X_OFFSET - BUCKET_RADIUS * 2, getRowY(0) - BUCKET_RADIUS, storeWidth, storeHeight, 30);
     p0Store.endFill();
 
-    p1Store.beginFill(0x00ff00, 1);
+    p1Store.beginFill(0x00ff00, 0);
     p1Store.drawRoundedRect(window.innerWidth - STORE_X_OFFSET, getRowY(0) - BUCKET_RADIUS, storeWidth, storeHeight, 30);
     p1Store.endFill();
 
@@ -110,8 +105,13 @@ let fillStoresWithStones = (player: number) => {
         let stone = PIXI.Sprite.from("stone.png");
         stone.scale = new PIXI.Point(.4, .4);
         stone.anchor.set(.5);
-        stone.x = getRandomInt(bounds.left + STONE_RADIUS, bounds.right - STONE_RADIUS);
-        stone.y = getRandomInt(bounds.top + STONE_RADIUS, bounds.bottom - STONE_RADIUS);
+        let midX = bounds.width / 2;
+        let midY = bounds.height / 2;
+        let rX = Math.random() * midX - (window.innerWidth * .078125) * STONE_RADIUS;
+        let rY = Math.random() * midY - (window.innerHeight * .19157) * STONE_RADIUS;
+        let theta = Math.random() * 2 * Math.PI;
+        stone.x = bounds.left + midX + rX * Math.cos(theta);
+        stone.y = bounds.top + midY + rY * Math.sin(theta);
         store.addChild(stone);
     }
     if (isPlayer0) {
@@ -127,7 +127,6 @@ let drawStones = (): void => {
     // Draw from the model
     for (let row = 0; row < model.length; row++) {
         for (let col = 0; col < model[row].length; col++) {
-            // Delete this later if we want
             let bucket = buckets[row][col];
             bucket.interactiveChildren = false;
             bucket.removeChildren();
@@ -136,8 +135,11 @@ let drawStones = (): void => {
                 let stone = PIXI.Sprite.from("stone.png");
                 stone.scale = new PIXI.Point(.4, .4);
                 stone.anchor.set(.5);
-                stone.x = getRandomInt(bounds.left + STONE_RADIUS, bounds.right - STONE_RADIUS);
-                stone.y = getRandomInt(bounds.top + STONE_RADIUS, bounds.bottom - STONE_RADIUS);
+                let theta = Math.random() * 2 * Math.PI;
+                let midpoint = bounds.width / 2;
+                let r = Math.random() * midpoint - 100 * STONE_RADIUS;
+                stone.x = bounds.left + midpoint + r * Math.cos(theta);
+                stone.y = bounds.top + midpoint + r * Math.sin(theta);
                 bucket.addChild(stone);
             }
             let amountOfStones = new PIXI.Text("" + model[row][col]);
@@ -151,10 +153,6 @@ let drawStones = (): void => {
 
 export let drawPlayerTurn = (p: number) => {
     playerTurnText.text = `Player ${p}`;
-};
-
-let getRandomInt = (min: number, max: number) => {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
 let isInBounds = (x: number, y: number, rect: PIXI.Rectangle): boolean => {
@@ -174,7 +172,6 @@ export let getIndexFromClick = (event: interaction.InteractionEvent): string => 
             }
         }
     }
-
     return "No bounds found";
 };
 
