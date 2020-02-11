@@ -29,6 +29,7 @@ describe("0. Exports", () => {
         assertVariableDefined("p0score", "number", student.p0Score);
         assertVariableDefined("winner", "number", student.winner);
         assertVariableDefined("player", "number", student.player);
+        assertFunctionDefined("setPlayer", student.setPlayer);
     });
 
 });
