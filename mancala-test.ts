@@ -1,10 +1,5 @@
 import * as student from "./index-script";
 import { expect, assert } from "chai";
-import { assertFunction, assertUnaryExpression } from "babel-types";
-// import { player } from "./index-script";
-
-
-
 
 let assertFunctionDefined = (name: string, input: {}) => {
     if (input === undefined) {
@@ -128,7 +123,6 @@ describe("4. onclick for player 0", () => {
     });
 
     it("should skip over player 1's store when the loop reaches the right edge", () => {
-
         assertFunctionDefined("onClick", student.onClick);
         assertVariableDefined("p1score", "number", student.p1Score);
         assertVariableDefined("model", "array", student.model);
@@ -203,26 +197,6 @@ describe("4. onclick for player 0", () => {
         expect(student.model).to.deep.equal(Ref.model);
         student.onClick(1, 5); // Take a turn with p1
         Ref.onClick(1, 5); // Take a turn with p1
-    });
-
-    it("should pass a RIGOROUS stress test of 100 random clicks", () => {
-        assertVariableDefined("model", "array", student.model);
-        assertFunctionDefined("onClick", student.onClick);
-        assertFunctionDefined("initModel", student.initModel);
-        student.initModel();
-        Ref.initModel();
-        let startingState = [
-            [10000, 10000, 10000, 10000, 10000, 10000],
-            [10000, 10000, 10000, 10000, 10000, 10000]
-        ];
-        setModel(student.model, startingState);
-        setModel(Ref.model, startingState);
-        for (let i = 0; i < 100; i++) {
-            let row = Math.floor(Math.random() * 2);
-            let col = Math.floor(Math.random() * 6);
-            expect(student.model).to.deep.equal(Ref.model);
-        }
-
     });
 
 });
@@ -360,24 +334,6 @@ describe("5. onclick for player 1", () => {
         student.onClick(0, 4); // Take a turn with p1
         Ref.onClick(0, 4); // Take a turn with p1
     });
-
-    it("should pass a RIGOROUS stress test of 100 random clicks", () => {
-        student.initModel();
-        Ref.initModel();
-        let startingState = [
-            [10000, 10000, 10000, 10000, 10000, 10000],
-            [10000, 10000, 10000, 10000, 10000, 10000]
-        ];
-        setModel(student.model, startingState);
-        setModel(Ref.model, startingState);
-        for (let i = 0; i < 100; i++) {
-            let row = Math.floor(Math.random() * 2);
-            let col = Math.floor(Math.random() * 6);
-            Ref.onClick(row, col);
-            student.onClick(row, col);
-            expect(student.model).to.deep.equal(Ref.model);
-        }
-    });
 });
 
 describe("6. checkIfGameOver", () => {
@@ -436,6 +392,26 @@ describe("6. checkIfGameOver", () => {
         setModel(student.model, startingState);
         setModel(Ref.model, startingState);
         expect(student.winner).to.equal(Ref.winner);
+    });
+});
+
+describe("7. student model", () => {
+    it("should be the same as the grader's model after 100 random clicks", () => {
+        student.initModel();
+        Ref.initModel();
+        let startingState = [
+            [10000, 10000, 10000, 10000, 10000, 10000],
+            [10000, 10000, 10000, 10000, 10000, 10000]
+        ];
+        setModel(student.model, startingState);
+        setModel(Ref.model, startingState);
+        for (let i = 0; i < 100; i++) {
+            let row = Math.floor(Math.random() * 2);
+            let col = Math.floor(Math.random() * 6);
+            Ref.onClick(row, col);
+            student.onClick(row, col);
+            expect(student.model).to.deep.equal(Ref.model);
+        }
     });
 });
 
