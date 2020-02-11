@@ -36,12 +36,12 @@ export let onClick = (row: number, col: number): boolean => {
         let direction = -1; // move counterclockwise, on row 0 this means go left
         let goAgain = false;
 
-        while (stonesInHand > 0) { 
+        while (stonesInHand > 0) {
             // one cycle = maximum of one stone placed
             // row, col now used to track what index we're "hovering over", not the start index
             col += direction;
 
-            if (col === -1) { 
+            if (col === -1) {
                 // case where player 0's store is reached
                 p0Score++;
                 row++;
@@ -52,12 +52,12 @@ export let onClick = (row: number, col: number): boolean => {
                 }
                 stonesInHand--;
 
-            } else if (col === 6) { 
+            } else if (col === 6) {
                 // case where player 1's store is reached on player 0's turn
                 row--;
                 direction *= -1; // start moving left on row 0, equiv to direction = 1
 
-            } else if (model[row][col] === 0 && stonesInHand === 1 && row === 0) { 
+            } else if (model[row][col] === 0 && stonesInHand === 1 && row === 0) {
                 // case to steal stones from index across from bucket
                 p0Score += 1 + model[1][col];
                 model[1][col] = 0;
@@ -163,6 +163,10 @@ export let sumRow = (row: number) => {
         count += model[row][col];
     }
     return count;
+};
+
+export let setPlayer = (p: number) => {
+    player = p;
 };
 
 main();
