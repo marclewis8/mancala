@@ -407,26 +407,21 @@ describe("6. checkIfGameOver", () => {
 });
 
 describe("7. student model", () => {
-    it("should be the same as the grader's model after 100 random clicks", () => {
+    it("should be the same as the grader's model over the course of an entire game", () => {
         student.setPlayer(0);
         Ref.player = 0;
         student.initModel();
         Ref.initModel();
-        let startingState = [
-            [10000, 10000, 10000, 10000, 10000, 10000],
-            [10000, 10000, 10000, 10000, 10000, 10000]
-        ];
-        setModel(student.model, startingState);
-        setModel(Ref.model, startingState);
-        for (let i = 0; i < 100; i++) {
-            let row = Math.floor(Math.random() * 2);
-            let col = Math.floor(Math.random() * 6);
-            Ref.onClick(row, col);
-            student.onClick(row, col);
-            expect(student.model).to.deep.equal(Ref.model);
-        }
+        testClick(0, 1);
+        // Include all different test cases
     });
 });
+
+let testClick = (row: number, col: number): void => {
+    Ref.onClick(row, col);
+    student.onClick(row, col);
+    expect(student.model).to.deep.equal(Ref.model, `Row: ${row}, Col: ${col},`);
+};
 
 let initStudentModel = () => {
     setModel(student.model, [
