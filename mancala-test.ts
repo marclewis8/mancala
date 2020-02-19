@@ -365,7 +365,7 @@ describe("6. checkIfGameOver", () => {
         assertFunctionDefined("checkIfGameOver", student.checkIfGameOver);
         assertVariableDefined("winner", "number", student.winner);
         let startingState = [
-            [0, 0, Number.POSITIVE_INFINITY, 0, 0, 0],
+            [0, 0, 10000, 0, 0, 0],
             [0, 0, 0, 0, 0, 0]
         ];
         setModel(student.model, startingState);
@@ -378,49 +378,111 @@ describe("6. checkIfGameOver", () => {
         assertFunctionDefined("checkIfGameOver", student.checkIfGameOver);
         assertVariableDefined("winner", "number", student.winner);
         let startingState = [
-            [0, 0, Number.NEGATIVE_INFINITY, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0],
+            [0, 0, 20000, 0, 0, 0]
+        ];
+        setModel(student.model, startingState);
+        setModel(Ref.model, startingState);
+        student.checkIfGameOver();
+        Ref.checkIfGameOver();
+    });
+    it("should correctly determine when there is a tie", () => {
+        assertFunctionDefined("checkIfGameOver", student.checkIfGameOver);
+        assertVariableDefined("winner", "number", student.winner);
+        let startingState = [
+            [0, 0, 10000, 0, 0, 0],
             [0, 0, 0, 0, 0, 0]
         ];
         setModel(student.model, startingState);
         setModel(Ref.model, startingState);
         student.checkIfGameOver();
         Ref.checkIfGameOver();
-        startingState = [
-            [0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, Number.POSITIVE_INFINITY]
-        ];
-        setModel(student.model, startingState);
-        setModel(Ref.model, startingState);
-        expect(student.winner).to.equal(Ref.winner);
-    });
-    it("should correctly determine when there is a tie", () => {
-        assertFunctionDefined("checkIfGameOver", student.checkIfGameOver);
-        assertVariableDefined("winner", "number", student.winner);
-        let startingState = [
-            [0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0]
-        ];
-        setModel(student.model, startingState);
-        setModel(Ref.model, startingState);
         expect(student.winner).to.equal(Ref.winner);
     });
 });
 
 describe("7. student model", () => {
     it("should be the same as the grader's model over the course of an entire game", () => {
-        student.setPlayer(0);
-        Ref.player = 0;
-        student.initModel();
-        Ref.initModel();
-        testClick(0, 1);
         // Include all different test cases
+        simulateGame();
     });
 });
 
 let testClick = (row: number, col: number): void => {
+    let startingState = copyArr(student.model);
     Ref.onClick(row, col);
     student.onClick(row, col);
-    expect(student.model).to.deep.equal(Ref.model, `Row: ${row}, Col: ${col},`);
+
+    expect(student.model).to.deep.equal(Ref.model, generateErrorMessage("model", row, col, startingState));
+    expect(student.player).to.equal(Ref.player, generateErrorMessage("player", row, col, startingState));
+    expect(student.p0Score).to.equal(Ref.p0Score, generateErrorMessage("p0Score", row, col, startingState));
+    expect(student.p1Score).to.equal(Ref.p1Score, generateErrorMessage("p1Score", row, col, startingState));
+};
+
+let generateErrorMessage = (sourceOfError: string, row: number, col: number, model: number[][]): string => {
+    return `Your ${sourceOfError} is incorrect after the following row and column are clicked on with the given starting state.\nRow: ${row}\nCol: ${col}\nStarting state:\n${model[0]}\n${model[1]}\n`;
+};
+
+let simulateGame = (): void => {
+    student.setPlayer(0);
+    Ref.player = 0;
+    student.initModel();
+    Ref.initModel();
+    // Test goAgain p0
+    testClick(0, 3);
+    // Regular movement p0
+    testClick(0, 5);
+    // Test goAgain p1
+    testClick(1, 2);
+    // Regular movement p1
+    testClick(1, 1);
+    // p0Score and regular movement of p0 on row 1
+    testClick(0, 2);
+    // Regular movement p1
+    testClick(1, 0);
+    // p0 steals from p1
+    testClick(0, 3);
+    // p1Score and regular movement of p1 on row 0
+    testClick(1, 3);
+    // p0Score and not stealing from itself
+    testClick(0, 4);
+    // p1 steal from p0
+    testClick(1, 1);
+    // p1 steal from p0
+    testClick(1, 1);
+    // p0 regular movement
+    testClick(0, 2);
+    // p1 steal nothing
+    testClick(1, 2);
+    // p0 steal 
+    testClick(0, 5);
+    // p1 steal 
+    testClick(1, 0);
+    // p0 wrap around and steal
+    testClick(0, 0);
+    // End of game 0
+    student.setPlayer(1);
+    Ref.player = 1;
+    let game1StartState = [
+        [5, 14, 4, 4, 4, 4],
+        [0, 3, 2, 2, 14, 8]
+    ];
+    setModel(student.model, game1StartState);
+    setModel(Ref.model, game1StartState);
+    // p1 wrap around and steal
+    testClick(1, 5);
+    // p0 goes all the way around and triggers go again
+    testClick(0, 1);
+    // p1 goes all the way around and triggers go again
+    testClick(1, 4);
+};
+
+let copyArr = <T>(input: T[][]): T[][] => {
+    let output: T[][] = [];
+    for (let i = 0; i < input.length; i++) {
+        output[i] = input[i].slice();
+    }
+    return output;
 };
 
 let initStudentModel = () => {
